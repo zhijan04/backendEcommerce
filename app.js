@@ -1,18 +1,18 @@
 class ProductManager {
     constructor() {
         this.products = [];
-        this.nextProductCode = 1;
+        this.nextProductId = 1;
     }
 
     getProducts() {
         return this.products;
     }
 
-    addProduct(title, description, price, thumbnail, stock) {
-        const code = this.nextProductCode;
-        this.nextProductCode++; 
+    addProduct(code, title, description, price, thumbnail, stock) {
+        const id = this.nextProductId;
+        this.nextProductId++; 
 
-        const existingProduct = this.products.find(product => product.code === code);
+        const existingProduct = this.products.find(product => product.id === id);
 
         if (existingProduct) {
             console.error("Ya existe un producto con ese código.");
@@ -20,28 +20,30 @@ class ProductManager {
         }
 
         let product = {
-            code,
+            id,
             title,
             description,
             price,
             thumbnail,
+            code,
             stock
         };
 
         this.products.push(product);
     }
-    getProductById(code) {
-        if (this.products.find(product => product.code === code)){
-        return this.products.find(product => product.code === code);
+    getProductById(id) {
+        const found_product = this.products.find((product) => product.id === id)
+        if (found_product){
+        return found_product;
         }
         else{
-            console.error("No existe un producto con ese código.");
-        
+            console.error("Not found");
+            return;
         }
     }
 }
-
 let productManager = new ProductManager();
-productManager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen2", 25);
+//A PARTIR DE ABAJO, SE COMPRUEBA EL FUNCIONAMIENTO 
+productManager.addProduct("as1","producto prueba", "Este es un producto prueba", 200, "Sin imagen2", 25);
 console.log(productManager.getProducts()); 
 console.log(productManager.getProductById(2))
