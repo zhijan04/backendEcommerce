@@ -12,7 +12,7 @@ class ProductManager {
         const id = this.nextProductId;
         this.nextProductId++; 
 
-        const existingProduct = this.products.find(product => product.id === id);
+        const existingProduct = this.products.find(product => product.code === code);
 
         if (existingProduct) {
             console.error("Ya existe un producto con ese código.");
