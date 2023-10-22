@@ -51,7 +51,6 @@ class ProductManager {
             console.error("Product not found");
             return;
         }
-        this.products[productIndex].id = id;
 
         if (this.products[productIndex].hasOwnProperty(field)){
             this.products[productIndex][field] = value;
@@ -69,10 +68,6 @@ class ProductManager {
         else if (this.products[DelProduct] && this.products[DelProduct].id === id){
             this.products.splice(DelProduct, 1);
             console.log(`Product with id: ${id} deleted successfully`)
-        }
-        else{
-            console.log("You cannot delete a product that your id cannot find.") 
-            return
         };
 
     }
@@ -89,9 +84,9 @@ productManager.addProduct("as12","producto prueba2", "Este es un producto prueba
 
 //EDIT
 console.log(productManager.updateProduct(2, "title", "nuevo titulo"))
-//DELETE
+// //DELETE
 console.log(productManager.deleteProduct(2));
-//LIST
+// //LIST
 console.log(productManager.getProducts()); 
-//GETPRODUCTOBYID
+// //GETPRODUCTOBYID
 console.log(productManager.getProductById(2))
