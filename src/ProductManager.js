@@ -71,22 +71,32 @@ class ProductManager {
         };
 
     }
-    
+
 
 
     }
+    
 
 let productManager = new ProductManager();
-//A PARTIR DE ABAJO, SE COMPRUEBA EL FUNCIONAMIENTO 
-productManager.addProduct("as1","producto prueba", "Este es un producto prueba", 200, "Sin imagen", 25);
-productManager.addProduct("as12","producto prueba2", "Este es un producto prueba2", 200, "Sin imagen2", 25);
+module.exports = ProductManager;
+// A PARTIR DE ABAJO, SE COMPRUEBA EL FUNCIONAMIENTO 
+// productManager.addProduct("as","producto prueba", "Este es un producto prueba", 200, "Sin imagen", 25);
+// productManager.addProduct("as2","producto prueba2", "Este es un producto prueba2", 200, "Sin imagen2", 25);
+// productManager.addProduct("as3","producto prueba3", "Este es un producto prueba3", 200, "Sin image3", 25);
+// productManager.addProduct("as4","producto prueba4", "Este es un producto prueba4", 200, "Sin imagen4", 25);
+// productManager.addProduct("as5","producto prueba5", "Este es un producto prueba5", 200, "Sin imagen5", 25);
+// productManager.addProduct("as6","producto prueba6", "Este es un producto prueba6", 200, "Sin imagen6", 25);
+// productManager.addProduct("as7","producto prueba7", "Este es un producto prueba7", 200, "Sin imagen7", 25);
+// productManager.addProduct("as8","producto prueba8", "Este es un producto prueba8", 200, "Sin imagen8", 25);
+// productManager.addProduct("as9","producto prueba9", "Este es un producto prueba9", 200, "Sin imagen9", 25);
+// productManager.addProduct("as10","producto prueba210", "Este es un producto prueba10", 200, "Sin imagen10", 25);
 
 
 //EDIT
-console.log(productManager.updateProduct(2, "title", "nuevo titulo"))
+// console.log(productManager.updateProduct(2, "title", "nuevo titulo"))
 // //DELETE
-console.log(productManager.deleteProduct(2));
+// console.log(productManager.deleteProduct(2));
 // //LIST
 console.log(productManager.getProducts()); 
 // //GETPRODUCTOBYID
-console.log(productManager.getProductById(2))
+// console.log(productManager.getProductById(2))
