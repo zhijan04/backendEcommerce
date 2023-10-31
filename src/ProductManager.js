@@ -1,22 +1,42 @@
+const fs = require('fs');
+const path = require('path');
+
 class ProductManager {
     constructor() {
-        this.products = [];
-        this.nextProductId = 1;
+        this.path = path.join(__dirname, 'productos.json');
     }
 
-    getProducts() {
-        return this.products;
+    async getProducts(limit = 0) {
+        if (fs.existsSync(this.path)) {
+            let products = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+            if (limit > 0) {
+                products = products.slice(0, limit);
+            }
+            return products;
+        }
+        return [];
     }
 
-    addProduct(code, title, description, price, thumbnail, stock) {
-        const id = this.nextProductId;
-        this.nextProductId++; 
+    async getProductById(id) {
+        let products = await this.getProducts();
+        const foundProduct = products.find((product) => product.id === id);
+        if (foundProduct) {
+            return foundProduct;
+        } else {
+            console.error("Product not found, please insert another id.");
+            return null;
+        }
+    }
 
-        const existingProduct = this.products.find(product => product.code === code);
+    async addProduct(code, title, description, price, thumbnail, stock) {
+        let products = await this.getProducts();
+        const id = products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+
+        const existingProduct = products.find((product) => product.code === code);
 
         if (existingProduct) {
             console.error("Ya existe un producto con ese código.");
-            return; 
+            return;
         }
 
         let product = {
@@ -26,77 +46,50 @@ class ProductManager {
             price,
             thumbnail,
             code,
-            stock
+            stock,
         };
 
-        this.products.push(product);
+        products.push(product);
+        await this.saveFile(products);
     }
-    getProductById(id) {
-        const found_product = this.products.find((product) => product.id === id)
-        if (found_product){
-        return found_product;
-        }
-        else{
-            console.error("Not found");
-            return;
-        }
 
+    async updateProduct(id, field, value) {
+        let products = await this.getProducts();
+        const productIndex = products.findIndex((product) => product.id === id);
 
-    
-    }
-    updateProduct(id, field, value) {
-        const productIndex = this.products.findIndex((product) => product.id === id);
-    
         if (productIndex === -1) {
             console.error("Product not found");
             return;
         }
 
-        if (this.products[productIndex].hasOwnProperty(field)){
-            this.products[productIndex][field] = value;
-
-        }else{
-            console.log("Field not found")
+        if (products[productIndex].hasOwnProperty(field)) {
+            products[productIndex][field] = value;
+            await this.saveFile(products);
+        } else {
+            console.log("Field not found");
         }
     }
-    deleteProduct(id){
-        const DelProduct = this.products.findIndex((product) => product.id === id);
-        if(DelProduct === -1){
-            console.log("You cannot delete a product that your id cannot find.")            
+
+    async deleteProduct(id) {
+        let products = await this.getProducts();
+        const productIndex = products.findIndex((product) => product.id === id);
+
+        if (productIndex === -1) {
+            console.log("Product not found");
+            return;
         }
 
-        else if (this.products[DelProduct] && this.products[DelProduct].id === id){
-            this.products.splice(DelProduct, 1);
-            console.log(`Product with id: ${id} deleted successfully`)
-        };
-
+        products.splice(productIndex, 1);
+        await this.saveFile(products);
+        console.log(`Product with id: ${id} deleted successfully`);
     }
 
-
-
+    async saveFile(products) {
+        try {
+            await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
+        } catch (error) {
+            console.log(' Something has gone wrong saving the product. ');
+        }
     }
-    
-
-let productManager = new ProductManager();
+}
 module.exports = ProductManager;
-// A PARTIR DE ABAJO, SE COMPRUEBA EL FUNCIONAMIENTO 
-// productManager.addProduct("as","producto prueba", "Este es un producto prueba", 200, "Sin imagen", 25);
-// productManager.addProduct("as2","producto prueba2", "Este es un producto prueba2", 200, "Sin imagen2", 25);
-// productManager.addProduct("as3","producto prueba3", "Este es un producto prueba3", 200, "Sin image3", 25);
-// productManager.addProduct("as4","producto prueba4", "Este es un producto prueba4", 200, "Sin imagen4", 25);
-// productManager.addProduct("as5","producto prueba5", "Este es un producto prueba5", 200, "Sin imagen5", 25);
-// productManager.addProduct("as6","producto prueba6", "Este es un producto prueba6", 200, "Sin imagen6", 25);
-// productManager.addProduct("as7","producto prueba7", "Este es un producto prueba7", 200, "Sin imagen7", 25);
-// productManager.addProduct("as8","producto prueba8", "Este es un producto prueba8", 200, "Sin imagen8", 25);
-// productManager.addProduct("as9","producto prueba9", "Este es un producto prueba9", 200, "Sin imagen9", 25);
-// productManager.addProduct("as10","producto prueba210", "Este es un producto prueba10", 200, "Sin imagen10", 25);
-
-
-//EDIT
-// console.log(productManager.updateProduct(2, "title", "nuevo titulo"))
-// //DELETE
-// console.log(productManager.deleteProduct(2));
-// //LIST
-console.log(productManager.getProducts()); 
-// //GETPRODUCTOBYID
-// console.log(productManager.getProductById(2))
