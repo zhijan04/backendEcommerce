@@ -1,39 +1,24 @@
 const express = require('express');
-const ProductManager = require('./ProductManager');
+const ProductManager = require('./clases/ProductManager');
 const PORT = 3000;
 const app = express();
-const productManager = new ProductManager();
+const productRouter = require('./rutas/ProductRouter'); 
+const cartRouter = require('./rutas/cartRouter');
+
 
 //SE PONE A FUNCIONAR EL SERVIDOR //
+app.use(express.json());
+
+app.use('/api/products', productRouter);
+
+app.use('/api/carts', cartRouter);
 
 app.get('/', (req, res) => {
-    res.send("<h1>¡Bienvenidos! Para ingresar a los productos, por favor diríjase a localhost:3000/products. ¡Muchas gracias!</h1>");
+    res.send("<h1>¡Bienvenidos! Para ingresar a los productos, por favor diríjase a localhost:3000/api/products o /api/carts. ¡Muchas gracias!</h1>");
 });
-
-app.get('/products', async (req, res) => {
-    const limit = parseInt(req.query.limit);
-
-    if (limit) {
-        const limitedProducts = await productManager.getProducts(limit);
-        res.json(limitedProducts);
-    } else {
-        const allProducts = await productManager.getProducts();
-        res.json(allProducts);
-    }
+app.use((req, res) => {
+    res.status(404).json({ message: "Página no encontrada, por favor dirigirse a /api/products o /api/carts" });
 });
-
-app.get('/products/:pid', async (req, res) => {
-    const pid = parseInt(req.params.pid);
-    const product = await productManager.getProductById(pid);
-
-    if (product) {
-        res.json(product);
-    } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
-    }
-});
-
-
 
 const server = app.listen(PORT, () => {
     console.log('server online')

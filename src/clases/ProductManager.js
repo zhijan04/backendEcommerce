@@ -3,7 +3,7 @@ const path = require('path');
 
 class ProductManager {
     constructor() {
-        this.path = path.join(__dirname, 'productos.json');
+        this.path = path.join(__dirname, '../files/productos.json');
     }
 
     async getProducts(limit = 0) {
