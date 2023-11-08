@@ -9,7 +9,7 @@ function loadCarts() {
         return JSON.parse(cartsData);
     } catch (error) {
         console.log('Error al cargar los carritos:', error.message);
-        return {};
+        return { carts: [], lastCartId: 0 };
     }
 }
 
@@ -21,50 +21,63 @@ function saveCarts(carts) {
 
 function createCart() {
     const carts = loadCarts();
-    const cartId = generateUniqueId(carts);
-    carts[cartId] = { id: cartId, products: {} };
+    const newCartId = generateUniqueId(carts); 
+    const newCart = { id: newCartId, products: [], status: true, thumbnails: [] };
+    carts.carts.push(newCart);
+    carts.lastCartId = newCartId; 
     saveCarts(carts);
-    console.log('Nuevo carrito creado:', cartId);
-    return carts[cartId];
+    console.log('Nuevo carrito creado con ID:', newCartId);
+    return newCart;
 }
 
 function getCart(cartId) {
-    const carts = loadCarts();
-    return carts[cartId];
+    const cartsData = loadCarts();
+    cartId = parseInt(cartId); 
+    const cart = cartsData.carts.find(cart => cart.id === cartId);
+    if (cart) {
+        console.log('Carrito encontrado:', cart);
+        return cart;
+    } else {
+        console.log("Carrito no encontrado");
+        return null;
+    }
 }
 
 function addProductToCart(cartId, productId, quantity) {
     const carts = loadCarts();
-    const cart = carts[cartId];
-    
-    if (cart) {
-        if (cart.products[productId]) {
-            cart.products[productId] += quantity;
-            console.log('Cantidad de producto actualizada en el carrito:', productId, 'Nueva cantidad:', cart.products[productId]);
+    const cartIdInt = parseInt(cartId); 
+
+    const cartIndex = carts.carts.findIndex(cart => cart.id === cartIdInt);
+
+    if (cartIndex !== -1) {
+        const cart = carts.carts[cartIndex];
+
+        const productIndex = cart.products.findIndex(product => product.id === productId);
+
+        if (productIndex !== -1) {
+
+            cart.products[productIndex].quantity += quantity;
+            console.log('Cantidad de producto actualizada en el carrito:', productId, 'Nueva cantidad:', cart.products[productIndex].quantity);
         } else {
-            cart.products[productId] = quantity; 
+
+            const newProduct = { id: productId, quantity };
+            cart.products.push(newProduct);
             console.log('Producto agregado al carrito:', productId, 'Cantidad:', quantity);
         }
-        
+
         saveCarts(carts);
         return true;
+    } else {
+        console.log('Carrito no encontrado');
+        return false;
     }
-    
-    console.log('Carrito no encontrado');
-    return false;
 }
 
-function generateUniqueId(carts) {
-    let lastId = 0;
-
-    if (carts) {
-        const cartIds = Object.keys(carts);
-        if (cartIds.length > 0) {
-            lastId = Math.max(...cartIds);
-        }
-    }
-
-    return (lastId + 1).toString();
+function generateUniqueId() {
+    const cartsData = loadCarts();
+    cartsData.lastCartId += 1; 
+    saveCarts(cartsData);
+    return cartsData.lastCartId; 
 }
 
 module.exports = {
