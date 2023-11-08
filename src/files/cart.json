@@ -23,7 +23,7 @@
       "products": [
         {
           "id": "2",
-          "quantity": 28
+          "quantity": 30
         },
         {
           "id": "1",
@@ -42,7 +42,13 @@
       "products": [],
       "status": true,
       "thumbnails": []
+    },
+    {
+      "id": 6,
+      "products": [],
+      "status": true,
+      "thumbnails": []
     }
   ],
-  "lastCartId": 5
+  "lastCartId": 6
 }
