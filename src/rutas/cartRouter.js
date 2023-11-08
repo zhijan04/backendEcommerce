@@ -31,19 +31,16 @@ cartRouter.post('/:cid/product/:pid', (req, res) => {
         return res.status(400).json({ error: 'La cantidad debe ser un número entero mayor o igual a 1.' });
     }
 
-    // Carga la lista de productos desde productos.json
     const productsFilePath = path.join(__dirname, '..', 'files', 'productos.json');
     const productsData = fs.readFileSync(productsFilePath, 'utf-8');
     const products = JSON.parse(productsData);
 
-    // Verifica si el producto con el ID proporcionado existe
     const productExists = products.find(product => product.id === parseInt(productId));
     if (!productExists) {
         console.log('Producto no encontrado:', productId);
         return res.status(404).json({ error: 'El producto no existe.' });
     }
-
-    // Si el producto existe, agrega la lógica para agregarlo al carrito.
+    
     const success = CartManager.addProductToCart(cartId, productId, quantity);
 
     if (success) {
