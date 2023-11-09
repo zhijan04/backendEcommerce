@@ -1,5 +1,4 @@
 const express = require('express');
-const ProductManager = require('./clases/ProductManager');
 const PORT = 3000;
 const app = express();
 const productRouter = require('./rutas/ProductRouter'); 

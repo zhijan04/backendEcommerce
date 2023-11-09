@@ -5,7 +5,7 @@
     "title": "Camisa de manga corta",
     "Description": "Camisa de algodón de manga corta para hombres",
     "Price": 29.99,
-    "thumbnail": "camisa_manga_corta.jpg",
+    "thumbnails": ["camisa_manga_corta.jpg", "camisa_manga_corta_espalda.jpg"],
     "stock": 25
   },
   {
@@ -14,7 +14,7 @@
     "title": "Vestido de noche elegante",
     "Description": "Vestido largo de noche para ocasiones especiales",
     "Price": 89.99,
-    "thumbnail": "vestido_noche.jpg",
+    "thumbnails": ["vestido_noche.jpg"],
     "stock": 10
   },
   {
@@ -23,7 +23,7 @@
     "title": "Pantalones vaqueros clásicos",
     "Description": "Jeans de corte recto para mujeres",
     "Price": 39.99,
-    "thumbnail": "pantalones_jeans.jpg",
+    "thumbnails": ["pantalones_jeans.jpg"],
     "stock": 15
   },
   {
@@ -32,7 +32,7 @@
     "title": "Chaqueta deportiva",
     "Description": "Chaqueta deportiva resistente al viento para exteriores",
     "Price": 49.99,
-    "thumbnail": "chaqueta_deportiva.jpg",
+    "thumbnails": ["chaqueta_deportiva.jpg"],
     "stock": 10
   },
   {
@@ -41,7 +41,7 @@
     "title": "Vestido de verano",
     "Description": "Vestido corto de verano con estampado floral",
     "Price": 34.99,
-    "thumbnail": "vestido_verano.jpg",
+    "thumbnails": ["vestido_verano.jpg"],
     "stock": 25
   },
   {
@@ -50,7 +50,7 @@
     "title": "Blusa de encaje",
     "Description": "Blusa de encaje elegante para ocasiones formales",
     "Price": 45.99,
-    "thumbnail": "blusa_encaje.jpg",
+    "thumbnails": ["blusa_encaje.jpg"],
     "stock": 15
   },
   {
@@ -59,7 +59,7 @@
     "title": "Shorts deportivos",
     "Description": "Shorts deportivos cómodos para actividades al aire libre",
     "Price": 19.99,
-    "thumbnail": "shorts_deportivos.jpg",
+    "thumbnails": ["shorts_deportivos.jpg"],
     "stock": 15
   },
   {
@@ -68,7 +68,7 @@
     "title": "Vestido de cóctel",
     "Description": "Vestido de cóctel con detalles de encaje",
     "Price": 59.99,
-    "thumbnail": "vestido_coctel.jpg",
+    "thumbnails": ["vestido_coctel.jpg"],
     "stock": 10
   },
   {
@@ -77,7 +77,7 @@
     "title": "Jersey de lana",
     "Description": "Jersey cálido de lana para días fríos de invierno",
     "Price": 39.99,
-    "thumbnail": "jersey_lana.jpg",
+    "thumbnails": ["jersey_lana.jpg"],
     "stock": 20
   },
   {
@@ -86,7 +86,7 @@
     "title": "Traje de baño de dos piezas",
     "Description": "Conjunto de traje de baño de dos piezas para mujeres",
     "Price": 29.99,
-    "thumbnail": "traje_baño.jpg",
+    "thumbnails": ["traje_baño.jpg"],
     "stock": 25
   }
 ]

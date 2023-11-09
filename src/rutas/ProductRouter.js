@@ -1,118 +1,121 @@
 const express = require('express');
+const router = express.Router();
 const ProductManager = require('../clases/ProductManager');
 
-const productRouter = express.Router();
 const productManager = new ProductManager();
 
-productRouter.get('/', async (req, res) => {
-    const limit = parseInt(req.query.limit);
-
-    if (limit) {
-        const limitedProducts = await productManager.getProducts(limit);
-        res.json(limitedProducts);
-    } else {
-        const allProducts = await productManager.getProducts();
-        res.json(allProducts);
-    }
-});
-
-productRouter.get('/:pid', async (req, res) => {
-    const pid = parseInt(req.params.pid);
-    const product = await productManager.getProductById(pid);
-
-    if (product) {
-        res.json(product);
-    } else {
-        res.status(404).json({ error: 'ID no válido.' });
-    }
-});
-
-productRouter.post('/', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        console.log('Datos recibidos en la solicitud:', req.body)
-        const { title, description, code, price, stock, category, thumbnails } = req.body;
+        const products = await productManager.getProducts();
+        const limit = parseInt(req.query.limit) || undefined;
 
-        if (!title || !description || !code || !price || !stock || !category) {
-            return res.status(400).json({ error: 'Todos los campos son obligatorios, excepto thumbnails.' });
+        if (limit && limit < 0) {
+            return res.status(400).json({ error: "El límite debe ser un número mayor a 0." });
         }
 
-        const products = await productManager.getProducts(); 
-        const lastProduct = products[products.length - 1];
-        const newId = lastProduct ? lastProduct.id + 1 : 1;
-        console.log('Nuevo ID generado:', newId);
-
-        const newProduct = {
-            id: newId,
-            title,
-            description,
-            code,
-            price,
-            status: true,
-            stock,
-            category,
-            thumbnails: thumbnails || [], 
-        };
-        console.log('Nuevo producto creado:', newProduct);
-
-        await productManager.addProduct(
-            newProduct.code,
-            newProduct.title,
-            newProduct.description,
-            newProduct.price,
-            newProduct.thumbnails,
-            newProduct.stock
-        );
-
-        res.status(201).json(newProduct);
+        const limitedProducts = limit ? products.slice(0, limit) : products;
+        res.status(200).json(limitedProducts);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error en el servidor al agregar el producto.' });
+        handleServerError(res);
     }
-})
-productRouter.put('/:pid', async (req, res) => {
-    const productId = parseInt(req.params.pid);
-    const { title, description, code, price, stock, category, thumbnails } = req.body;
-
-    if (!title && !description && !code && !price && !stock && !category && !thumbnails) {
-        return res.status(400).json({ error: 'Debes proporcionar al menos un campo para actualizar.' });
-    }
-
-    const products = await productManager.getProducts();
-
-    const productIndex = products.findIndex((product) => product.id === productId);
-
-    if (productIndex === -1) {
-        return res.status(404).json({ error: 'Producto no encontrado.' });
-    }
-
-    if (title) products[productIndex].title = title;
-    if (description) products[productIndex].description = description;
-    if (code) products[productIndex].code = code;
-    if (price) products[productIndex].price = price;
-    if (stock) products[productIndex].stock = stock;
-    if (category) products[productIndex].category = category;
-    if (thumbnails) products[productIndex].thumbnails = thumbnails;
-
-    await productManager.saveFile(products);
-
-    res.json(products[productIndex]);
-})
-productRouter.delete('/:pid', async (req, res) => {
-    const productId = parseInt(req.params.pid);
-
-    const products = await productManager.getProducts();
-
-    const productIndex = products.findIndex((product) => product.id === productId);
-
-    if (productIndex === -1) {
-        return res.status(404).json({ error: 'Producto no encontrado.' });
-    }
-
-    products.splice(productIndex, 1);
-
-    await productManager.saveFile(products);
-
-    res.status(204).send();
 });
 
-module.exports = productRouter;
+router.get('/:pid', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.pid);
+        const product = await productManager.getProductById(productId);
+        if (product) {
+            res.status(200).json(product);
+        } else {
+            res.status(404).json({ message: "Producto no encontrado" });
+        }
+    } catch (error) {
+        handleServerError(res);
+    }
+});
+
+router.delete('/:pid', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.pid);
+        const result = await productManager.deleteProduct(productId);
+        
+        if (result === "Producto eliminado con exito") {
+            res.status(200).json({ message: result });
+        } else if (!result) {
+            res.status(404).json({ message: "Producto no encontrado" });
+        } else {
+            handleServerError(res);
+        }
+    } catch (error) {
+        handleServerError(res);
+    }
+});
+
+router.post('/', async (req, res) => {
+    try {
+        const { title, description, price, code, stock, category, status } = req.body;
+        const thumbnails = req.body.thumbnails || [];
+        
+        const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
+        const invalidFields = validateFields(req.body, requiredFields);
+
+        if (invalidFields.length > 0) {
+            return res.status(400).json({ error: `Campos inválidos: ${invalidFields.join(', ')}` });
+        }
+
+        if (!Array.isArray(thumbnails)) {
+            return res.status(400).json({ error: '"Thumbnails" únicamente permite formato de arreglo. ' });
+        }
+
+        const productData = {
+            title,
+            description,
+            price,
+            thumbnails,
+            code,
+            stock,
+            category,
+            status: status !== undefined ? status : true
+        };
+
+        const result = await productManager.addProductRawJSON(productData);
+
+        const response = {
+            "Ya existe un producto con ese código.": 400,
+            "Producto agregado correctamente": 201,
+            "Error al agregar el producto": 500,
+        };
+
+        const reStatus = response[result] || 500;
+
+        return res.status(reStatus).json({ message: result });
+
+    } catch (error) {
+        handleServerError(res);
+    }
+});
+
+router.put('/:pid', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.pid);
+        const updates = req.body;
+        const result = await productManager.updateProduct(productId, updates);
+        if (result) {
+            res.status(200).json({ message: "Producto actualizado con exito" });
+        } else {
+            res.status(404).json({ message: "Producto no encontrado" });
+        }
+    } catch (error) {
+        handleServerError(res);
+    }
+});
+
+function handleServerError(res) {
+    res.status(500).json({ error: "Error de servidor" });
+}
+
+function validateFields(data, fields) {
+    return fields.filter(field => !(field in data));
+}
+
+module.exports = router;

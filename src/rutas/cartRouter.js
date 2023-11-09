@@ -1,53 +1,63 @@
 const express = require('express');
-const cartRouter = express.Router();
-const CartManager = require('../clases/cartManager'); 
-const path = require('path');
-const fs = require('fs');
+const router = express.Router();
+const CartsManager = require('../clases/cartManager');
 
-cartRouter.post('/', (req, res) => {
-    const newCart = CartManager.createCart();
-    res.status(201).json(newCart);
+const cartsManager = new CartsManager();
+
+router.get('/', async (req, res) => {
+    try {
+        const carts = await cartsManager.getCarts();
+        res.status(200).json(carts);
+    } catch (error) {
+        handleError(res, error);
+    }
 });
 
-cartRouter.get('/:cid', (req, res) => {
-    const cartId = req.params.cid;
-    const cart = CartManager.getCart(cartId);
-    if (cart) {
-        console.log('Productos en el carrito', cartId, ':', cart.products);
-        res.json(cart.products);
+router.get('/:cid', async (req, res) => {
+    try {
+        const cartId = parseInt(req.params.cid);
+        const cart = await cartsManager.getCartById(cartId);
+
+        if (cart && cart !== "Carrito no encontrado.") {
+            res.status(200).json(cart);
+        } else {
+            res.status(404).json({ message: "Carrito no encontrado" });
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
+
+router.post('/', async (req, res) => {
+    try {
+        const cart = await cartsManager.createCart();
+        if (cart) {
+            res.status(201).json({ message: `Carrito con id: ${cart.id} creado` });
+        } else {
+            handleError(res, "Error creando carrito");
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
+
+router.post('/:cid/product/:pid', async (req, res) => {
+    const cartId = parseInt(req.params.cid);
+    const productId = parseInt(req.params.pid);
+    const result = await cartsManager.addProductToCart(cartId, productId);
+
+    if (result.status === 200) {
+        res.status(200).json({ message: result.message });
+    } else if (result.status === 404) {
+        res.status(404).json({ error: result.error });
     } else {
-        console.log("carro no encontrado")
-        res.status(404).json({ error: 'Carrito no encontrado.' });
+        handleError(res, result.error);
     }
 });
 
-cartRouter.post('/:cid/product/:pid', (req, res) => {
-    const cartId = req.params.cid;
-    const productId = req.params.pid;
-    const quantity = req.body.quantity;
+function handleError(res, error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: "Error de servidor" });
+}
 
-    if (!quantity || isNaN(quantity) || quantity < 1) {
-        console.log('Cantidad no válida:', quantity);
-        return res.status(400).json({ error: 'La cantidad debe ser un número entero mayor o igual a 1.' });
-    }
-
-    const productsFilePath = path.join(__dirname, '..', 'files', 'productos.json');
-    const productsData = fs.readFileSync(productsFilePath, 'utf-8');
-    const products = JSON.parse(productsData);
-
-    const productExists = products.find(product => product.id === parseInt(productId));
-    if (!productExists) {
-        console.log('Producto no encontrado:', productId);
-        return res.status(404).json({ error: 'El producto no existe.' });
-    }
-    
-    const success = CartManager.addProductToCart(cartId, productId, quantity);
-
-    if (success) {
-        res.status(201).json({ message: 'Producto agregado al carrito con éxito.' });
-    } else {
-        res.status(404).json({ error: 'Carrito no encontrado.' });
-    }
-});
-
-module.exports = cartRouter;
+module.exports = router;
