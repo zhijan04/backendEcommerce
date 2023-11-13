@@ -7,14 +7,8 @@ const productManager = new ProductManager();
 router.get('/', async (req, res) => {
     try {
         const products = await productManager.getProducts();
-        const limit = parseInt(req.query.limit) || undefined;
-
-        if (limit && limit < 0) {
-            return res.status(400).json({ error: "El límite debe ser un número mayor a 0." });
-        }
-
-        const limitedProducts = limit ? products.slice(0, limit) : products;
-        res.status(200).json(limitedProducts);
+        console.log('Productos cargados:', products);
+        res.render('home', { products });
     } catch (error) {
         handleServerError(res);
     }
@@ -58,7 +52,6 @@ router.post('/', async (req, res) => {
         
         const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
         const invalidFields = validateFields(req.body, requiredFields);
-
         if (invalidFields.length > 0) {
             return res.status(400).json({ error: `Campos inválidos: ${invalidFields.join(', ')}` });
         }

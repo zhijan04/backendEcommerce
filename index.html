@@ -8,8 +8,12 @@
 <body>
     <h1>god</h1>
 </body>
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
 <script>
-    console.log("asd");
-    
+    const socket = io();
+
+    socket.on('realtimeupdate', (data) => {
+        location.reload();
+    });
 </script>
 </html>

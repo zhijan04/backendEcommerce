@@ -2,8 +2,9 @@ const fs = require('fs').promises;
 const path = require('path');
 
 class ProductManager {
-    constructor() {
+    constructor(httpServer, ioInstance) {
         this.filePath = path.join(__dirname, '..', 'files', 'productos.json');
+        this.io = ioInstance;
     }
 
     async addProductRawJSON(productData) {
@@ -28,6 +29,7 @@ class ProductManager {
             return "Error agregando producto.";
         }
     }
+    
 
     async getProducts() {
         try {

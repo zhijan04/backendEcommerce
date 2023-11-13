@@ -1,0 +1,17 @@
+<h1>Productos en Tiempo Real</h1>
+
+<ul id="realTimeProductList">
+    {{#each products}}
+        <li>{{this.title}} - {{this.description}} - ${{this.price}}</li>
+    {{/each}}
+</ul>
+
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
+<script>
+    const socket = io();
+    
+    socket.on('realtimeupdate', (data) {
+        console.log('Evento realtimeupdate recibido:', data);
+        location.reload();
+    });
+</script>
