@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const ProductManager = require('../clases/ProductManager');
-const { io } = require('../app.js');
 
 const productManager = new ProductManager();
 
@@ -48,6 +47,7 @@ router.delete('/:pid', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
+        const io = req.app.get('socket');
         const { title, description, price, code, stock, category, status } = req.body;
         const thumbnails = req.body.thumbnails || [];
         
@@ -77,12 +77,13 @@ router.post('/', async (req, res) => {
 
         const response = {
             "Ya existe un producto con ese código.": 400,
-            "Producto agregado correctamente": 201,
+            "Producto agregado correctamente.": 201,
             "Error al agregar el producto": 500,
         };
-        io.emit("realTimeProduct", productData.title)
         const reStatus = response[result] || 500;
 
+        if(reStatus === 201)
+        {io.emit("realTimeProduct", productData)}
         return res.status(reStatus).json({ message: result });
 
     } catch (error) {
