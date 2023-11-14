@@ -109,16 +109,5 @@
       "traje_baño.jpg"
     ],
     "stock": 25
-  },
-  {
-    "id": 11,
-    "title": "Nuevo producto",
-    "description": "Descripción del nuevo producto",
-    "price": 19.99,
-    "thumbnails": [],
-    "code": "NP123",
-    "stock": 10,
-    "category": "Electrónica",
-    "status": true
   }
 ]

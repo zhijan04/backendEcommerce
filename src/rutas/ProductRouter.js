@@ -30,16 +30,19 @@ router.get('/:pid', async (req, res) => {
 
 router.delete('/:pid', async (req, res) => {
     try {
+        const io = req.app.get('socket');
         const productId = parseInt(req.params.pid);
         const result = await productManager.deleteProduct(productId);
         
         if (result === "Producto eliminado con exito") {
+            {io.emit("realTimeProductDelete", productId)}
             res.status(200).json({ message: result });
         } else if (!result) {
             res.status(404).json({ message: "Producto no encontrado" });
         } else {
             handleServerError(res);
         }
+
     } catch (error) {
         handleServerError(res);
     }
