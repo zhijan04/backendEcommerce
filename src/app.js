@@ -3,19 +3,18 @@ const http = require('http');
 const socketIO = require('socket.io');
 const { engine } = require('express-handlebars');
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
+const { Server } = require ('socket.io')
 const PORT = 3000;
+
 const productRouter = require('./rutas/ProductRouter'); 
 const ProductManager = require('./clases/ProductManager');
 const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
 
 
-const productManager = new ProductManager(http, io);
+const productManager = new ProductManager(http);
 
 app.engine('handlebars', engine());
-
 app.set('view engine', 'handlebars');
 
 app.set('views', './src/views');
@@ -45,14 +44,18 @@ app.use((req, res) => {
     res.status(404).json({ message: "Página no encontrada, por favor dirigirse a /api/products o /api/carts" });
 });
 
-io.on('connection', (socket) => {
-    console.log('Usuario conectado');
+// io.on('connection', (socket) => {
+//     console.log('Usuario conectado');
 
-    socket.on('disconnect', () => {
-        console.log('Usuario desconectado');
-    });
-});
+//     socket.on('disconnect', () => {
+//         console.log('Usuario desconectado');
+//     });
+// });
 
-server.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Servidor en línea en el puerto ${PORT}`);
 });
+
+const io = new Server(server);
+
+module.exports = io;

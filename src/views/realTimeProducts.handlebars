@@ -6,12 +6,5 @@
     {{/each}}
 </ul>
 
-<script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
-<script>
-    const socket = io();
-    
-    socket.on('realtimeupdate', (data) {
-        console.log('Evento realtimeupdate recibido:', data);
-        location.reload();
-    });
-</script>
+<script src="socket.io/socket.io.js"></script>
+<script src='../public/js/products.js'></script>

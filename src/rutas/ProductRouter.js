@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ProductManager = require('../clases/ProductManager');
+const { io } = require('../app.js');
 
 const productManager = new ProductManager();
 
@@ -71,6 +72,7 @@ router.post('/', async (req, res) => {
             status: status !== undefined ? status : true
         };
 
+        
         const result = await productManager.addProductRawJSON(productData);
 
         const response = {
@@ -78,7 +80,7 @@ router.post('/', async (req, res) => {
             "Producto agregado correctamente": 201,
             "Error al agregar el producto": 500,
         };
-
+        io.emit("realTimeProduct", productData.title)
         const reStatus = response[result] || 500;
 
         return res.status(reStatus).json({ message: result });
