@@ -33,8 +33,8 @@ router.delete('/:pid', async (req, res) => {
         const io = req.app.get('socket');
         const productId = parseInt(req.params.pid);
         const result = await productManager.deleteProduct(productId);
-        
-        if (result === "Producto eliminado con exito") {
+        console.log(result)
+        if (result === "Producto eliminado correctamente.") {
             {io.emit("realTimeProductDelete", productId)}
             res.status(200).json({ message: result });
         } else if (!result) {
@@ -83,13 +83,14 @@ router.post('/', async (req, res) => {
             "Producto agregado correctamente.": 201,
             "Error al agregar el producto": 500,
         };
-        const reStatus = response[result] || 500;
-
+        const reStatus = response[result.message] || 500;
+            console.log(result.message, reStatus, result)
         if(reStatus === 201)
-        {io.emit("realTimeProduct", productData)}
-        return res.status(reStatus).json({ message: result });
+        {io.emit("realTimeProduct", result.product)}
+        return res.status(reStatus).json({ message: result.message });
 
     } catch (error) {
+        console.log(error)
         handleServerError(res);
     }
 });

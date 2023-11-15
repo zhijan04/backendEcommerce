@@ -12,7 +12,9 @@ class ProductManager {
             const products = await this.getProducts();
     
             if (products.some(product => product.code === productData.code)) {
-                return "Ya existe un producto con ese código.";
+                return {
+                    message: "Ya existe un producto con ese código."
+                };
             }
     
             const productIdCounter = Math.max(...products.map(product => product.id), 0) + 1;
@@ -23,10 +25,14 @@ class ProductManager {
     
             products.push(newProduct);
             await this.saveProductsToJSON(products);
-            return "Producto agregado correctamente.";
-        } catch (error) {
-            console.error('Error agregando producto:');
-            return "Error agregando producto.";
+            return {
+                message: "Producto agregado correctamente.",
+                product: newProduct
+            };
+        } catch (error) {;
+            return {
+                message: "agregando producto"
+            };
         }
     }
     
