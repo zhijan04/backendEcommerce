@@ -5,8 +5,12 @@ const { engine } = require('express-handlebars');
 const app = express();
 const PORT = 3000;
 const path = require('path');
+const mongoose = require('mongoose');
 
-const productRouter = require('./rutas/ProductRouter'); 
+const ChatMessage = require('./dao/models/chatModel.js');
+const exphbs = require('express-handlebars');
+
+const productRouter = require('./rutas/ProductRouter');
 const ProductManager = require('./clases/ProductManager');
 const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
@@ -28,7 +32,7 @@ app.use('/api/products', productRouter);
 
 app.use('/api/carts', cartRouter);
 
-app.use('/', viewRouter);  
+app.use('/', viewRouter);
 
 app.use('/realtimeproducts', viewRouter);
 
@@ -42,6 +46,11 @@ app.get('/', async (req, res) => {
     }
 });
 
+app.get('/api/chat', (req, res) => {
+    res.render('chat');
+});
+
+
 app.use((req, res) => {
     res.status(404).json({ message: "Página no encontrada, por favor dirigirse a /api/products o /api/carts" });
 });
@@ -49,13 +58,53 @@ app.use((req, res) => {
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
 
+    socket.on('set username', (username) => {
+        socket.username = username;
+        console.log(`Usuario ${username} conectado`);
+
+        ChatMessage.find().then((messages) => {
+            socket.emit('chat history', messages);
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+    socket.on('chat message', (message) => {
+        if (!socket.username) {
+            console.error('Usuario sin nombre intentando enviar un mensaje');
+            return;
+        }
+
+        const data = {
+            user: socket.username,
+            message: message
+        };
+
+        const newMessage = new ChatMessage(data);
+        newMessage.save()
+            .then(() => {
+                io.emit('chat message', data);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    });
+
     socket.on('disconnect', () => {
         console.log('Usuario desconectado');
     });
 });
 
-app.set ("socket", io)
+app.set("socket", io)
 
 server.listen(PORT, () => {
     console.log(`Servidor en línea en el puerto ${PORT}`);
 });
+
+try {
+    //CAMBIAR LA CLAVE POR <PASSWORD>
+    mongoose.connect("mongodb+srv://leoben:<password>@ecommerce.56z7kdm.mongodb.net/?retryWrites=true&w=majority", { dbName: 'ecommerce' })
+    console.log("db online")
+
+} catch (error) {
+    console.log(error.message)
+}

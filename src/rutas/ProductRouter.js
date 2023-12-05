@@ -1,23 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const ProductManager = require('../clases/ProductManager');
+const ProductManager = require('../clases/ProductManager.js');
+const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo, getProductsMongo } = require('../dao/ProductManager.js')
 
-const productManager = new ProductManager();
+// const productManager = new ProductManager();
 
 router.get('/', async (req, res) => {
     try {
-        const products = await productManager.getProducts();
-        console.log('Productos cargados:', products);
-        res.render('home', { products });
+        const products = await getProductsMongo();
+        // console.log('Productos cargados:', products.products);
+        const final = products.products.map(objectMongo => {
+            const object = objectMongo.toObject({ getters: true, setters: false })
+            return object
+        })
+        console.log(final)
+        res.render('home', { products: final });
+
     } catch (error) {
+        console.log(error)
         handleServerError(res);
     }
 });
 
 router.get('/:pid', async (req, res) => {
     try {
-        const productId = parseInt(req.params.pid);
-        const product = await productManager.getProductById(productId);
+        const productId = req.params.pid;
+        const product = await getProductById(productId);
         if (product) {
             res.status(200).json(product);
         } else {
@@ -31,11 +39,11 @@ router.get('/:pid', async (req, res) => {
 router.delete('/:pid', async (req, res) => {
     try {
         const io = req.app.get('socket');
-        const productId = parseInt(req.params.pid);
-        const result = await productManager.deleteProduct(productId);
+        const productId = req.params.pid;
+        const result = await deleteProductMongo(productId);
         console.log(result)
         if (result === "Producto eliminado correctamente.") {
-            {io.emit("realTimeProductDelete", productId)}
+            { io.emit("realTimeProductDelete", productId) }
             res.status(200).json({ message: result });
         } else if (!result) {
             res.status(404).json({ message: "Producto no encontrado" });
@@ -53,7 +61,7 @@ router.post('/', async (req, res) => {
         const io = req.app.get('socket');
         const { title, description, price, code, stock, category, status } = req.body;
         const thumbnails = req.body.thumbnails || [];
-        
+
         const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
         const invalidFields = validateFields(req.body, requiredFields);
         if (invalidFields.length > 0) {
@@ -75,8 +83,8 @@ router.post('/', async (req, res) => {
             status: status !== undefined ? status : true
         };
 
-        
-        const result = await productManager.addProductRawJSON(productData);
+
+        const result = await addProductMongo(productData);
 
         const response = {
             "Ya existe un producto con ese código.": 400,
@@ -84,9 +92,8 @@ router.post('/', async (req, res) => {
             "Error al agregar el producto": 500,
         };
         const reStatus = response[result.message] || 500;
-            console.log(result.message, reStatus, result)
-        if(reStatus === 201)
-        {io.emit("realTimeProduct", result.product)}
+        console.log(result.message, reStatus, result)
+        if (reStatus === 201) { io.emit("realTimeProduct", result.product) }
         return res.status(reStatus).json({ message: result.message });
 
     } catch (error) {
@@ -99,7 +106,7 @@ router.put('/:pid', async (req, res) => {
     try {
         const productId = parseInt(req.params.pid);
         const updates = req.body;
-        const result = await productManager.updateProduct(productId, updates);
+        const result = await updateProductMongo(productId, updates);
         if (result) {
             res.status(200).json({ message: "Producto actualizado con exito" });
         } else {

@@ -1,6 +1,5 @@
 [
   {
-    "id": 1,
     "code": "RP001",
     "title": "Camisa de manga corta",
     "description": "Camisa de algodón de manga corta para hombres",
@@ -12,7 +11,6 @@
     "stock": 25
   },
   {
-    "id": 2,
     "code": "RP002",
     "title": "Vestido de noche elegante",
     "description": "Vestido largo de noche para ocasiones especiales",
@@ -23,7 +21,6 @@
     "stock": 10
   },
   {
-    "id": 3,
     "code": "RP003",
     "title": "Pantalones vaqueros clásicos",
     "description": "Jeans de corte recto para mujeres",
@@ -34,7 +31,6 @@
     "stock": 15
   },
   {
-    "id": 4,
     "code": "RP004",
     "title": "Chaqueta deportiva",
     "description": "Chaqueta deportiva resistente al viento para exteriores",
@@ -45,7 +41,6 @@
     "stock": 10
   },
   {
-    "id": 5,
     "code": "RP005",
     "title": "Vestido de verano",
     "description": "Vestido corto de verano con estampado floral",
@@ -56,7 +51,6 @@
     "stock": 25
   },
   {
-    "id": 6,
     "code": "RP006",
     "title": "Blusa de encaje",
     "description": "Blusa de encaje elegante para ocasiones formales",
@@ -67,7 +61,6 @@
     "stock": 15
   },
   {
-    "id": 7,
     "code": "RP007",
     "title": "Shorts deportivos",
     "description": "Shorts deportivos cómodos para actividades al aire libre",
@@ -78,7 +71,6 @@
     "stock": 15
   },
   {
-    "id": 8,
     "code": "RP008",
     "title": "Vestido de cóctel",
     "description": "Vestido de cóctel con detalles de encaje",
@@ -89,7 +81,6 @@
     "stock": 10
   },
   {
-    "id": 9,
     "code": "RP009",
     "title": "Jersey de lana",
     "description": "Jersey cálido de lana para días fríos de invierno",
@@ -100,7 +91,6 @@
     "stock": 20
   },
   {
-    "id": 10,
     "code": "RP010",
     "title": "Traje de baño de dos piezas",
     "description": "Conjunto de traje de baño de dos piezas para mujeres",
