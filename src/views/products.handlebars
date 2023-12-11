@@ -1,0 +1,23 @@
+
+    <h1>Lista de Productos</h1>
+    <ul>
+        {{#each products}}
+            <li>
+                <strong>{{this.title}}</strong> - {{this.price}}
+                <form action="/carts" method="post">
+                    <input type="hidden" name="productId" value="{{@key}}">
+                    <input type="number" name="quantity" value="1" min="1" required>
+                    <button type="submit">Agregar al Carrito</button>
+                </form>
+            </li>
+        {{/each}}
+    </ul>
+    <div>
+        {{#if hasPrevPage}}
+            <a href="/products?page={{prevPage}}">Página anterior</a>
+        {{/if}}
+        {{#if hasNextPage}}
+            <a href="/products?page={{nextPage}}">Página siguiente</a>
+        {{/if}}
+    </div>
+

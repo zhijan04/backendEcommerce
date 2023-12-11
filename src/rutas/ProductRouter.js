@@ -1,48 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const ProductManager = require('../clases/ProductManager.js');
-const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo, getProductsMongo } = require('../dao/ProductManager.js')
+const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo, getProductsMongo } = require('../dao/ProductManager.js');
+const productosModelo = require('../dao/models/productsModel.js');
 
-// const productManager = new ProductManager();
 
 router.get('/', async (req, res) => {
     try {
-        const limit = parseInt(req.query.limit) || 10;
-        const page = parseInt(req.query.page) || 1;
-        const startIndex = (page - 1) * limit;
+        const page = req.query.page || 1;
+        const limit = 10;
+        const products = await productosModelo
+            .find()
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .select('_id thumbnails');
+        const totalProducts = await productosModelo.countDocuments();
+        const hasNextPage = (page * limit) < totalProducts;
+        const hasPrevPage = page > 1;
+        const nextPage = hasPrevPage ? page - 1 : null;
+        const prevPage = hasNextPage ? page + 1 : null;
 
-        const products = await getProductsMongo(startIndex, limit);
-
-        const final = products.products.map(objectMongo => {
-            const object = objectMongo.toObject({ getters: true, setters: false });
-            return object;
+        res.render('products', {
+            products,
+            hasNextPage,
+            hasPrevPage,
+            nextPage,
+            prevPage
         });
-
-        const totalPages = Math.ceil(products.totalProducts / limit);
-        const prevPage = page > 1 ? page - 1 : null;
-        const nextPage = page < totalPages ? page + 1 : null;
-
-        const response = {
-            status: "success",
-            payload: final,
-            totalPages: totalPages,
-            prevPage: prevPage,
-            nextPage: nextPage,
-            page: page,
-            hasPrevPage: prevPage !== null,
-            hasNextPage: nextPage !== null,
-            prevLink: prevPage !== null ? `/?page=${prevPage}&limit=${limit}` : null,
-            nextLink: nextPage !== null ? `/?page=${nextPage}&limit=${limit}` : null
-        };
-
-        // Coloca console.log aquí para imprimir la respuesta en la consola del servidor
-        console.log(response);
-
-        res.render('home', { products: final, pagination: response });
-
     } catch (error) {
-        console.log(error);
-        handleServerError(res);
+        console.error(error);
+        res.status(500).json({ error: "Error de servidor" });
     }
 });
 
@@ -79,6 +66,7 @@ router.delete('/:pid', async (req, res) => {
         handleServerError(res);
     }
 });
+
 
 router.post('/', async (req, res) => {
     try {
