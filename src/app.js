@@ -102,7 +102,7 @@ server.listen(PORT, () => {
 
 try {
     //CAMBIAR LA CLAVE POR <PASSWORD>
-    mongoose.connect("mongodb+srv://leoben:<password>@ecommerce.56z7kdm.mongodb.net/?retryWrites=true&w=majority", { dbName: 'ecommerce' })
+    mongoose.connect("mongodb+srv://leoben:coder@ecommerce.56z7kdm.mongodb.net/?retryWrites=true&w=majority", { dbName: 'ecommerce' })
     console.log("db online")
 
 } catch (error) {

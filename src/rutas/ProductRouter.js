@@ -7,17 +7,41 @@ const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo,
 
 router.get('/', async (req, res) => {
     try {
-        const products = await getProductsMongo();
-        // console.log('Productos cargados:', products.products);
+        const limit = parseInt(req.query.limit) || 10;
+        const page = parseInt(req.query.page) || 1;
+        const startIndex = (page - 1) * limit;
+
+        const products = await getProductsMongo(startIndex, limit);
+
         const final = products.products.map(objectMongo => {
-            const object = objectMongo.toObject({ getters: true, setters: false })
-            return object
-        })
-        console.log(final)
-        res.render('home', { products: final });
+            const object = objectMongo.toObject({ getters: true, setters: false });
+            return object;
+        });
+
+        const totalPages = Math.ceil(products.totalProducts / limit);
+        const prevPage = page > 1 ? page - 1 : null;
+        const nextPage = page < totalPages ? page + 1 : null;
+
+        const response = {
+            status: "success",
+            payload: final,
+            totalPages: totalPages,
+            prevPage: prevPage,
+            nextPage: nextPage,
+            page: page,
+            hasPrevPage: prevPage !== null,
+            hasNextPage: nextPage !== null,
+            prevLink: prevPage !== null ? `/?page=${prevPage}&limit=${limit}` : null,
+            nextLink: nextPage !== null ? `/?page=${nextPage}&limit=${limit}` : null
+        };
+
+        // Coloca console.log aquí para imprimir la respuesta en la consola del servidor
+        console.log(response);
+
+        res.render('home', { products: final, pagination: response });
 
     } catch (error) {
-        console.log(error)
+        console.log(error);
         handleServerError(res);
     }
 });

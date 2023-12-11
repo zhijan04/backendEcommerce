@@ -9,40 +9,52 @@
 
 <body>
     <ul id="messages"></ul>
-    <form id="form" action="">
-        <input id="m" autocomplete="off" /><button>Enviar mensaje</button>
+    <form id="form">
+        <input id="m" autocomplete="off" />
+        <button type="submit">Enviar mensaje</button>
     </form>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const user = prompt("Ingrese su email:");
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
 
-        if (user) {
-            $(function () {
-                const socket = io();
+        function promptForEmail() {
+            let email;
+            do {
+                email = prompt("Ingrese su correo electrónico:");
+            } while (!isValidEmail(email));
+            return email;
+        }
 
-                socket.emit('set username', user);
+        const user = promptForEmail();
 
-                socket.on('chat history', (messages) => {
-                    messages.forEach((message) => {
-                        $('#messages').append($('<li>').text(`${message.user}: ${message.message}`));
-                    });
-                });
-                socket.on('chat message', (data) => {
-                    $('#messages').append($('<li>').text(`${data.user}: ${data.message}`));
-                });
+        $(function () {
+            const socket = io();
 
-                $('form').submit(function () {
-                    socket.emit('chat message', $('#m').val());
-                    $('#m').val('');
-                    return false;
+            socket.emit('set username', user);
+
+            socket.on('chat history', (messages) => {
+                messages.forEach((message) => {
+                    $('#messages').append($('<li>').text(`${message.user}: ${message.message}`));
                 });
             });
-        } else {
-            alert('No se ingresó un email, por favor ingresar uno.');
-            location.reload();
-        }
+            socket.on('chat message', (data) => {
+                $('#messages').append($('<li>').text(`${data.user}: ${data.message}`));
+            });
+
+            $('form').submit(function (event) {
+                event.preventDefault();
+                const message = $('#m').val();
+                if (message.trim() !== '') {
+                    socket.emit('chat message', message);
+                    $('#m').val('');
+                }
+            });
+        });
     </script>
 </body>
 

@@ -22,21 +22,16 @@ async function addProductRawJSON(productData) {
         };
     }
 }
-async function getAllProducts() {
+async function getAllProducts(startIndex, limit) {
     try {
-        const products = await productosModelo.find();
+        const products = await productosModelo.find().skip(startIndex).limit(limit);
+        const totalProducts = await productosModelo.countDocuments();
 
-        if (products.length === 0) {
-            return {
-                message: "No hay productos disponibles.",
-                products: []
-            };
-        } else {
-            return {
-                message: "Productos cargados correctamente.",
-                products: products
-            };
-        }
+        return {
+            message: "Productos cargados correctamente.",
+            products: products,
+            totalProducts: totalProducts
+        };
     } catch (error) {
         console.log(error);
         return {

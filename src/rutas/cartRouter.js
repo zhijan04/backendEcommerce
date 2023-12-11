@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const CartsManager = require('../clases/cartManager.js');
-const { createCartMongo, getCartMongo, addProductToCartMongo }  = require('../dao/CartManager.js')
+const cartsModelo = require('../dao/models/cartsModel.js');
+const ProductosModelo = require('../dao/models/productsModel.js');
+const Carts = require('../dao/models/cartsModel.js');
+const { createCartMongo, getCartMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo }  = require('../dao/CartManager.js')
 
 const cartsManager = new CartsManager();
 
@@ -17,13 +20,21 @@ router.get('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
     try {
         const cartId = req.params.cid;
-        const cart = await getCartMongo(cartId);
+        const cart = await cartsModelo.findOne({ _id: cartId });
 
-        if (cart && cart !== "Carrito no encontrado.") {
-            res.status(200).json(cart);
-        } else {
-            res.status(404).json({ message: "Carrito no encontrado" });
+        if (!cart) {
+            return res.status(404).json({ message: "Carrito no encontrado" });
         }
+        const productsWithDetails = await Promise.all(cart.products.map(async (productInfo) => {
+            const product = await ProductosModelo.findById(productInfo.id);
+            return {
+                product,
+                quantity: productInfo.quantity
+            };
+        }));
+        cart.products = productsWithDetails;
+
+        return res.status(200).json(cart);
     } catch (error) {
         handleError(res, error);
     }
@@ -55,7 +66,79 @@ router.post('/:cid/product/:pid', async (req, res) => {
         handleError(res, result.error);
     }
 });
+router.delete('/:cid/product/:pid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const productId = req.params.pid;
 
+        const result = await removeProductFromCartMongo(cartId, productId);
+
+        if (result.status === 200) {
+            res.status(200).json({ message: result.message, cart: result.cart });
+        } else if (result.status === 404) {
+            res.status(404).json({ error: result.error });
+        } else {
+            handleError(res, result.error);
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
+router.delete('/:cid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+
+        const result = await removeAllProductsFromCartMongo(cartId);
+
+        if (result.status === 200) {
+            res.status(200).json({ message: result.message, cart: result.cart });
+        } else if (result.status === 404) {
+            res.status(404).json({ error: result.error });
+        } else {
+            handleError(res, result.error);
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
+
+router.put('/:cid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const updatedProducts = req.body.products; // Asume que el cuerpo de la solicitud tiene un arreglo de productos
+
+        const result = await updateCartMongo(cartId, updatedProducts);
+
+        if (result.status === 200) {
+            res.status(200).json({ message: result.message, cart: result.cart });
+        } else if (result.status === 404) {
+            res.status(404).json({ error: result.error });
+        } else {
+            handleError(res, result.error);
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
+router.put('/:cid/product/:pid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const productId = req.params.pid;
+        const updatedQuantity = req.body.quantity;
+
+        const result = await updateProductQuantityMongo(cartId, productId, updatedQuantity);
+
+        if (result.status === 200) {
+            res.status(200).json({ message: result.message, cart: result.cart });
+        } else if (result.status === 404) {
+            res.status(404).json({ error: result.error });
+        } else {
+            handleError(res, result.error);
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
 function handleError(res, error) {
     console.error('Error:', error);
     res.status(500).json({ error: "Error de servidor" });
