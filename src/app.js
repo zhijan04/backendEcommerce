@@ -6,9 +6,7 @@ const app = express();
 const PORT = 3000;
 const path = require('path');
 const mongoose = require('mongoose');
-
 const ChatMessage = require('./dao/models/chatModel.js');
-const exphbs = require('express-handlebars');
 
 const productRouter = require('./rutas/ProductRouter');
 const ProductManager = require('./clases/ProductManager');

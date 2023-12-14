@@ -7,29 +7,40 @@ const productosModelo = require('../dao/models/productsModel.js');
 
 router.get('/', async (req, res) => {
     try {
-        const page = req.query.page || 1;
-        const limit = 10;
-        const products = await productosModelo
-            .find()
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .select('_id thumbnails');
-        const totalProducts = await productosModelo.countDocuments();
-        const hasNextPage = (page * limit) < totalProducts;
-        const hasPrevPage = page > 1;
-        const nextPage = hasPrevPage ? page - 1 : null;
-        const prevPage = hasNextPage ? page + 1 : null;
+        const limit = parseInt(req.query.limit) || 10;
+        const page = parseInt(req.query.page) || 1;
+        const startIndex = (page - 1) * limit;
 
-        res.render('products', {
-            products,
-            hasNextPage,
-            hasPrevPage,
-            nextPage,
-            prevPage
+        const products = await getProductsMongo(startIndex, limit);
+
+        const final = products.products.map(objectMongo => {
+            const object = objectMongo.toObject({ getters: true, setters: false });
+            return object;
         });
+
+        const totalPages = Math.ceil(products.totalProducts / limit);
+        const prevPage = page > 1 ? page - 1 : null;
+        const nextPage = page < totalPages ? page + 1 : null;
+
+        const response = {
+            status: "success",
+            payload: final,
+            totalPages: totalPages,
+            prevPage: prevPage,
+            nextPage: nextPage,
+            page: page,
+            hasPrevPage: prevPage !== null,
+            hasNextPage: nextPage !== null,
+            prevLink: prevPage !== null ? `/productos?page=${prevPage}&limit=${limit}` : null,
+            nextLink: nextPage !== null ? `/productos?page=${nextPage}&limit=${limit}` : null
+        };
+        console.log(response);
+
+        res.json(response);
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error de servidor" });
+        console.log(error);
+        handleServerError(res);
     }
 });
 
@@ -79,11 +90,9 @@ router.post('/', async (req, res) => {
         if (invalidFields.length > 0) {
             return res.status(400).json({ error: `Campos inválidos: ${invalidFields.join(', ')}` });
         }
-
         if (!Array.isArray(thumbnails)) {
             return res.status(400).json({ error: '"Thumbnails" únicamente permite formato de arreglo. ' });
         }
-
         const productData = {
             title,
             description,
@@ -94,10 +103,7 @@ router.post('/', async (req, res) => {
             category,
             status: status !== undefined ? status : true
         };
-
-
         const result = await addProductMongo(productData);
-
         const response = {
             "Ya existe un producto con ese código.": 400,
             "Producto agregado correctamente.": 201,

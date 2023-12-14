@@ -9,7 +9,12 @@ const productsSchema = new mongoose.Schema(
         description: String,
         price: Number,
         thumbnails: Array, 
-        stock: Number 
+        stock: Number,
+        category: String,
+        status: {
+            type: Boolean,
+            default: true,
+        }
     }
 )
 

@@ -4,42 +4,62 @@ const CartsManager = require('../clases/cartManager.js');
 const cartsModelo = require('../dao/models/cartsModel.js');
 const ProductosModelo = require('../dao/models/productsModel.js');
 const Carts = require('../dao/models/cartsModel.js');
-const { createCartMongo, getCartMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo }  = require('../dao/CartManager.js')
-
-const cartsManager = new CartsManager();
+const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo }  = require('../dao/CartManager.js')
 
 router.get('/', async (req, res) => {
     try {
-        const carts = await cartsManager.getCarts();
+        const carts = await getAllCartsMongo();
         res.status(200).json(carts);
     } catch (error) {
         handleError(res, error);
     }
 });
 
+function handleError(res, error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: "Error de servidor" });
+}
+
 router.get('/:cid', async (req, res) => {
     try {
         const cartId = req.params.cid;
-        const cart = await cartsModelo.findOne({ _id: cartId });
+        const cart = await cartsModelo.findOne({ _id: cartId }).lean();
 
         if (!cart) {
             return res.status(404).json({ message: "Carrito no encontrado" });
         }
         const productsWithDetails = await Promise.all(cart.products.map(async (productInfo) => {
-            const product = await ProductosModelo.findById(productInfo.id);
+            const product = await ProductosModelo.findById(productInfo.id).lean();
             return {
                 product,
                 quantity: productInfo.quantity
             };
         }));
         cart.products = productsWithDetails;
+        res.json(productsWithDetails);
 
-        return res.status(200).json(cart);
     } catch (error) {
         handleError(res, error);
     }
 });
 
+router.post('/:cid/product/:_id', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const productId = req.params._id;
+        const quantity = req.body.quantity;
+
+        const result = await addProductToCartMongo(cartId, productId.toString(), quantity);
+
+        if (result.status === 200) {
+            res.render('successView', { cartId }); 
+        } else {
+            res.status(result.status).json({ error: result.message });
+        }
+    } catch (error) {
+        handleError(res, error);
+    }
+});
 router.post('/', async (req, res) => {
     try {
         const cart = await createCartMongo();

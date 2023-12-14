@@ -18,7 +18,7 @@ async function addProductRawJSON(productData) {
     } catch (error) {
         console.log(error)
         return {
-            message: "agregando producto"
+            message: "El producto no fue agregado correctamente"
         };
     }
 }
@@ -26,21 +26,17 @@ async function getAllProducts(startIndex, limit) {
     try {
         const products = await productosModelo.find().skip(startIndex).limit(limit);
         const totalProducts = await productosModelo.countDocuments();
-
         return {
             message: "Productos cargados correctamente.",
             products: products,
             totalProducts: totalProducts
         };
     } catch (error) {
-        console.log(error);
         return {
             message: "Error obteniendo los productos."
         };
     }
 }
-
-
 async function getProductById(pid) {
     try {
         const product = await productosModelo.findOne({ _id: pid });

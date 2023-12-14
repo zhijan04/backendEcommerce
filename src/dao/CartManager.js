@@ -12,6 +12,29 @@ async function createCart() {
         };
     }
 }
+async function getCartsWithProducts() {
+    try {
+        const carts = await cartsModelo.find().populate('products.id', 'title price');
+
+        return carts.map(cart => {
+            const cartObject = cart.toObject({ getters: true, setters: false });
+            const cartId = cartObject._id ? cartObject._id.toString() : null;
+
+            return {
+                _id: cartId,
+                products: cartObject.products.map(product => {
+                    return {
+                        id: product.id,
+                        quantity: product.quantity
+                    };
+                })
+            };
+        });
+    } catch (error) {
+        console.log(error);
+        return { message: "Error al obtener los carritos.", status: 500 };
+    }
+}
 
 async function getCartById(_cid) {
     try {
@@ -155,6 +178,7 @@ async function removeAllProductsFromCart(cartId) {
 
 module.exports = {
     createCartMongo: createCart,
+    getAllCartsMongo: getCartsWithProducts,
     getCartMongo: getCartById,
     addProductToCartMongo: addProductToCart,
     removeProductFromCartMongo: removeProductFromCart,
