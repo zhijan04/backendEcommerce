@@ -7,24 +7,39 @@ const productosModelo = require('../dao/models/productsModel.js');
 
 router.get('/', async (req, res) => {
     try {
-        const limit = parseInt(req.query.limit) || 10;
-        const page = parseInt(req.query.page) || 1;
+        const { limit = 10, page = 1, query, filterType, filterValue, sort } = req.query;
         const startIndex = (page - 1) * limit;
 
-        const products = await getProductsMongo(startIndex, limit);
+        let searchQuery = {};
+        if (query) {
+            searchQuery = { $text: { $search: query } };
+        }
+        if (filterType && filterValue) {
+            searchQuery[filterType] = filterValue;
+        }
 
-        const final = products.products.map(objectMongo => {
-            const object = objectMongo.toObject({ getters: true, setters: false });
-            return object;
-        });
+        const sortOptions = {};
+        if (sort === 'asc') {
+            sortOptions.price = 1;
+        } else if (sort === 'desc') {
+            sortOptions.price = -1;
+        }
 
-        const totalPages = Math.ceil(products.totalProducts / limit);
+        const products = await productosModelo
+            .find(searchQuery)
+            .sort(sortOptions)
+            .skip(startIndex)
+            .limit(parseInt(limit));
+
+        const totalProducts = await productosModelo.countDocuments(searchQuery);
+
+        const totalPages = Math.ceil(totalProducts / limit);
         const prevPage = page > 1 ? page - 1 : null;
         const nextPage = page < totalPages ? page + 1 : null;
 
         const response = {
-            status: "success",
-            payload: final,
+            status: 'success',
+            products: products,
             totalPages: totalPages,
             prevPage: prevPage,
             nextPage: nextPage,
@@ -34,13 +49,11 @@ router.get('/', async (req, res) => {
             prevLink: prevPage !== null ? `/productos?page=${prevPage}&limit=${limit}` : null,
             nextLink: nextPage !== null ? `/productos?page=${nextPage}&limit=${limit}` : null
         };
-        console.log(response);
 
-        res.json(response);
-
+        res.status(200).json(response);
     } catch (error) {
-        console.log(error);
-        handleServerError(res);
+        console.error('Error obteniendo los productos:', error);
+        res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
     }
 });
 

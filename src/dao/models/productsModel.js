@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-
 const productsCollection = "products"
 const productsSchema = new mongoose.Schema(
     {

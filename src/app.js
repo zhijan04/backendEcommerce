@@ -44,7 +44,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.get('/api/chat', (req, res) => {
+app.get('/chat', (req, res) => {
     res.render('chat');
 });
 
