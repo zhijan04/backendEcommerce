@@ -9,8 +9,22 @@ const ProductosModelo = require('../dao/models/productsModel.js');
 function handleServerError(res) {
     res.status(500).json({ error: "Error de servidor" });
 }
+const auth=(req,res, next)=>{
+    if(!req.session.usuario){
+        return res.redirect('/login')
+    }
 
-router.get('/productos', async (req, res) => {
+    next()
+}
+const auth2=(req,res, next)=>{
+    if(req.session.usuario){
+        return res.redirect('/perfil')
+    }
+
+    next()
+}
+
+router.get('/productos',auth, async (req, res) => {
     try {
         const limit = 4;
         const page = parseInt(req.query.page) || 1;
@@ -41,7 +55,7 @@ router.get('/productos', async (req, res) => {
         };
         console.log(response);
 
-        res.render('products', { products: final, pagination: response });
+        res.render('products',{ products: final, pagination: response });
 
     } catch (error) {
         console.log(error);
@@ -62,7 +76,7 @@ function handleError(res, error) {
     res.status(500).json({ error: "Error de servidor" });
 }
 
-router.get('/carts/:cid', async (req, res) => {
+router.get('/carts/:cid',auth, async (req, res) => {
     try {
         const cartId = req.params.cid;
         const cart = await cartsModelo.findOne({ _id: cartId }).lean();
@@ -94,6 +108,32 @@ router.get('/realtimeproducts', async (req, res) => {
         console.error('Error al cargar productos en la vista en tiempo real:', error);
         res.status(500).json({ error: "Error de servidor" });
     }
+});
+
+router.get('/', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).render('home')
+});
+router.get('/registro',auth2, (req, res) => {
+
+    let {error} = req.query
+    
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).render('registro', {error})
+});
+router.get('/login',auth2, (req, res) => {
+
+    let {error, mensaje} = req.query
+
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).render('login', {error, mensaje})
+});
+router.get('/perfil',auth, (req, res) => {
+
+    let usuario=req.session.usuario
+console.log(usuario)
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).render('perfil', {usuario})
 });
 
 router.use('/products', productsRouter);

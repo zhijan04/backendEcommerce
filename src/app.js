@@ -7,23 +7,41 @@ const PORT = 3000;
 const path = require('path');
 const mongoose = require('mongoose');
 const ChatMessage = require('./dao/models/chatModel.js');
+const sessions = require('express-session');
+const mongoStore = require('connect-mongo')
+const { routerSession } = require('./rutas/sessionRouter.js');
 
 const productRouter = require('./rutas/ProductRouter');
 const ProductManager = require('./clases/ProductManager');
 const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
 
-
 const productManager = new ProductManager(http);
 
 const server = http.createServer(app);
 const io = socketIO(server);
+
+
+app.use(sessions(
+    {
+        secret:"adminCod3r123",
+        resave: true, saveUninitialized: true,
+        store: mongoStore.create(
+            {
+                mongoUrl:"mongodb+srv://leoben:coder@ecommerce.56z7kdm.mongodb.net/?retryWrites=true&w=majority",
+                mongoOptions:{dbName: 'ecommerce'},
+                ttl: 3600
+            }
+        )
+    }
+))
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname + '/views'));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(__dirname + '/public'));;
 
 app.use('/api/products', productRouter);
@@ -32,17 +50,9 @@ app.use('/api/carts', cartRouter);
 
 app.use('/', viewRouter);
 
-app.use('/realtimeproducts', viewRouter);
+app.use('/api/sessions', routerSession)
 
-app.get('/', async (req, res) => {
-    try {
-        const products = await productManager.getProducts();
-        res.render('home', { products });
-    } catch (error) {
-        console.error('Error al cargar productos en la página de inicio:', error);
-        res.status(500).json({ error: "Error de servidor" });
-    }
-});
+app.use('/realtimeproducts', viewRouter);
 
 app.get('/chat', (req, res) => {
     res.render('chat');
