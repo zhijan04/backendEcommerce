@@ -101,8 +101,11 @@ router.get('/carts/:cid',auth, async (req, res) => {
 
 router.get('/realtimeproducts', async (req, res) => {
     try {
-        const products = await getProductsMongo();
-        res.render('realTimeProducts', { products });
+        const allProducts = await ProductosModelo.find().lean();
+        if (!allProducts || allProducts.length === 0) {
+            return res.status(404).json({ message: "No se encontraron productos" });
+        }
+        res.render('realTimeProducts', { products: allProducts});
     } catch (error) {
         console.error('Error al cargar productos en la vista en tiempo real:', error);
         res.status(500).json({ error: "Error de servidor" });
