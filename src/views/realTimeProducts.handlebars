@@ -3,7 +3,8 @@
 
 <ul id="realTimeProducts">
     {{#each products}}
-        <li id="product-{{this.id}}">{{this.title}} - {{this.description}} - ${{this.price}}</li>
+        <li id="product-{{this.id}}">{{products.title}} - {{this.description}} - ${{this.price}}</li>
+        {{log this}}
     {{/each}}
 </ul>
 

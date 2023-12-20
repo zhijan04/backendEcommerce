@@ -4,7 +4,7 @@ const CartsManager = require('../clases/cartManager.js');
 const cartsModelo = require('../dao/models/cartsModel.js');
 const ProductosModelo = require('../dao/models/productsModel.js');
 const Carts = require('../dao/models/cartsModel.js');
-const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo }  = require('../dao/CartManager.js')
+const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo, getCartMongo }  = require('../dao/CartManager.js')
 
 router.get('/', async (req, res) => {
     try {
@@ -23,23 +23,16 @@ function handleError(res, error) {
 router.get('/:cid', async (req, res) => {
     try {
         const cartId = req.params.cid;
-        const cart = await cartsModelo.findOne({ _id: cartId }).lean();
+        const cart = await getCartMongo(cartId);
 
-        if (!cart) {
-            return res.status(404).json({ message: "Carrito no encontrado" });
+        if (cart && cart !== "Carrito no encontrado.") {
+            res.status(200).json(cart);
+        } else {
+            res.status(404).json({ message: "Carrito no encontrado" });
         }
-        const productsWithDetails = await Promise.all(cart.products.map(async (productInfo) => {
-            const product = await ProductosModelo.findById(productInfo.id).lean();
-            return {
-                product,
-                quantity: productInfo.quantity
-            };
-        }));
-        cart.products = productsWithDetails;
-        res.json(productsWithDetails);
-
     } catch (error) {
-        handleError(res, error);
+        res.status(500).json({ error: "Error de servidor" });
+        console.log(error)
     }
 });
 
@@ -52,7 +45,7 @@ router.post('/:cid/product/:_id', async (req, res) => {
         const result = await addProductToCartMongo(cartId, productId.toString(), quantity);
 
         if (result.status === 200) {
-            res.render('successView', { cartId }); 
+            res.status(200).json({ success: true, message: "Producto agregado correctamente al carrito", cartId });
         } else {
             res.status(result.status).json({ error: result.message });
         }

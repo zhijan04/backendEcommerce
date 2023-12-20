@@ -99,10 +99,9 @@ router.get('/carts/:cid',auth, async (req, res) => {
     }
 });
 
-
 router.get('/realtimeproducts', async (req, res) => {
     try {
-        const products = await ProductManager.getProductsMongo();
+        const products = await getProductsMongo();
         res.render('realTimeProducts', { products });
     } catch (error) {
         console.error('Error al cargar productos en la vista en tiempo real:', error);
