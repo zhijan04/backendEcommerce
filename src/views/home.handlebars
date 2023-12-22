@@ -1,3 +1,10 @@
 <h1>Home page</h1>
 <hr>
-<br><br>
+<p>Bienvenido <strong>{{usuario.nombre}}!</strong> - Rol: <strong>{{usuario.rol}}</strong></p>
+<hr>
+<h2>Productos disponibles.</h2>
+<ul id="productsHome">
+    {{#each products}}
+        <li id="product-{{this.id}}">{{this.title}} - {{this.description}} - ${{this.price}}</li>
+    {{/each}}
+</ul>

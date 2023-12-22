@@ -118,7 +118,7 @@ router.delete('/:cid', async (req, res) => {
 router.put('/:cid', async (req, res) => {
     try {
         const cartId = req.params.cid;
-        const updatedProducts = req.body.products; // Asume que el cuerpo de la solicitud tiene un arreglo de productos
+        const updatedProducts = req.body.products;
 
         const result = await updateCartMongo(cartId, updatedProducts);
 

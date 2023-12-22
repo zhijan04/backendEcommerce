@@ -3,6 +3,7 @@ const router = express.Router();
 const ProductManager = require('../dao/ProductManager.js');
 const productsRouter = require('../rutas/ProductRouter.js');
 const { getProductsMongo } = require('../dao/ProductManager.js');
+const { getAllCartsMongo } = require('../dao/CartManager.js')
 const cartsModelo = require('../dao/models/cartsModel.js');
 const ProductosModelo = require('../dao/models/productsModel.js');
 
@@ -112,9 +113,19 @@ router.get('/realtimeproducts', async (req, res) => {
     }
 });
 
-router.get('/', (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).render('home')
+router.get('/', async(req, res) => {
+    try {
+        
+    let usuario=req.session.usuario
+        const allProducts = await ProductosModelo.find().lean();
+        if (!allProducts || allProducts.length === 0) {
+            return res.status(404).json({ message: "No se encontraron productos" });
+        }
+        res.render('home', { products: allProducts, usuario});
+    } catch (error) {
+        console.error('Error al cargar productos en la vista en tiempo real:', error);
+        res.status(500).json({ error: "Error de servidor" });
+    }
 });
 router.get('/registro',auth2, (req, res) => {
 
