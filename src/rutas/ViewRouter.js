@@ -10,20 +10,21 @@ const ProductosModelo = require('../dao/models/productsModel.js');
 function handleServerError(res) {
     res.status(500).json({ error: "Error de servidor" });
 }
-const auth=(req,res, next)=>{
-    if(!req.session.usuario){
-        return res.redirect('/login')
+const auth = (req, res, next) => {
+    if (!req.session.user && !req.session.usuario) {
+        return res.redirect('/login');
     }
 
-    next()
-}
-const auth2=(req,res, next)=>{
-    if(req.session.usuario){
-        return res.redirect('/perfil')
+    next();
+};
+
+const auth2 = (req, res, next) => {
+    if (req.session.user || req.session.usuario) {
+        return res.redirect('/perfil');
     }
 
-    next()
-}
+    next();
+};
 
 router.get('/productos',auth, async (req, res) => {
     try {
@@ -116,7 +117,7 @@ router.get('/realtimeproducts', async (req, res) => {
 router.get('/', async(req, res) => {
     try {
         
-    let usuario=req.session.usuario
+    let usuario=req.session.user
         const allProducts = await ProductosModelo.find().lean();
         if (!allProducts || allProducts.length === 0) {
             return res.status(404).json({ message: "No se encontraron productos" });
@@ -143,7 +144,7 @@ router.get('/login',auth2, (req, res) => {
 });
 router.get('/perfil',auth, (req, res) => {
 
-    let usuario=req.session.usuario
+    let usuario=req.session.user
     res.setHeader('Content-Type', 'text/html');
     res.status(200).render('perfil', {usuario})
 });

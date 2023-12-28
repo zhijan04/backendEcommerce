@@ -4,13 +4,23 @@ const passport = require('passport');
 const Usuario = require('../dao/models/usuariosModel.js')
 const bcrypt = require('bcrypt');
 
-router.post('/login',
-    passport.authenticate('login', {
-        successRedirect: '/productos',
-        failureRedirect: '/login',
-        failureFlash: true
-    })
-);
+router.post('/login', (req, res, next) => {
+    passport.authenticate('login', (err, user, info) => {
+        if (err) {
+            return next(err)
+        }
+        if (!user) {
+            return res.redirect('/login?error=' + info.message)
+        }
+
+        req.session.user = {
+            nombre: user.nombre,
+            email: user.email,
+            rol: user.rol
+        }
+        res.redirect('/');
+    })(req, res, next)
+})
 
 router.post('/registro',
     passport.authenticate('registro', {
@@ -29,12 +39,12 @@ router.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-router.get('/github', passport.authenticate('github', { failureRedirect: "/api/sessions/errorGitHub" }), (req, res) => { })
+router.get('/github', passport.authenticate('github', {}), (req, res) => {
+});
 
-router.get('/callbackGitHub', passport.authenticate('github'), (req, res) => {
-    req.session.usuario = req.user
-    res.setHeader('Content-Type', 'application/json');
-    res.redirect('/perfil')
+router.get('/callbackGithub', passport.authenticate('github', { failureRedirect: "/api/sessions/errorGitHub" }), (req, res) => {
+    req.session.user = req.user
+    res.redirect('/productos?message=You logged in correctly');
 });
 
 router.get('/errorGitHub', (req, res) => {

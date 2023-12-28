@@ -122,7 +122,7 @@ const initPassport = () => {
                 rol: usuario.rol
             });
 
-            console.log(usuario)
+            console.log("usuario",usuario)
         } catch (error) {
             done(error, null);
         }

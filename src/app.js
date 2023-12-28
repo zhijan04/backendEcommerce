@@ -20,7 +20,7 @@ const productManager = new ProductManager(http);
 
 const server = http.createServer(app);
 const io = socketIO(server);
-
+const cookieParser = require('cookie-parser');
 const { initPassport } = require('./config/config.passport.js');
 const passport = require ('passport')
 
@@ -42,6 +42,7 @@ initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use(cookieParser());
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
