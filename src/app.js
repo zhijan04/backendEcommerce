@@ -21,6 +21,9 @@ const productManager = new ProductManager(http);
 const server = http.createServer(app);
 const io = socketIO(server);
 
+const { initPassport } = require('./config/config.passport.js');
+const passport = require ('passport')
+
 
 app.use(sessions(
     {
@@ -35,6 +38,10 @@ app.use(sessions(
         )
     }
 ))
+initPassport()
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');

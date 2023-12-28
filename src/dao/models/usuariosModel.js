@@ -18,7 +18,7 @@ const usuariosEsquema = new mongoose.Schema(
             updatedAt: "FechaUltMod", 
             createdAt: "FechaAlta"
         }
-    }
+    },{strict:false}
 );
 
 const Usuario = mongoose.model("usuarios", usuariosEsquema);

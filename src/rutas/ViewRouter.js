@@ -144,7 +144,6 @@ router.get('/login',auth2, (req, res) => {
 router.get('/perfil',auth, (req, res) => {
 
     let usuario=req.session.usuario
-console.log(usuario)
     res.setHeader('Content-Type', 'text/html');
     res.status(200).render('perfil', {usuario})
 });
