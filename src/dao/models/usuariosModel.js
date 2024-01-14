@@ -1,17 +1,20 @@
 const mongoose = require('mongoose');
 
 const usuariosEsquema = new mongoose.Schema(
-    {
-        nombre: String,
+    { 
+        first_name: String,
+        last_name: String,
         email: {
             type: String, 
             unique: true
         },
+        age: Number,
         password: String,
         rol: {
             type: String,
             default: 'user'
-        }
+        },
+        cartId: String
     },
     {
         timestamps: {

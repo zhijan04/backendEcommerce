@@ -14,13 +14,19 @@ router.post('/login', (req, res, next) => {
         }
 
         req.session.user = {
-            nombre: user.nombre,
+            nombre: user.first_name,
             email: user.email,
             rol: user.rol
         }
         res.redirect('/');
     })(req, res, next)
 })
+router.get('/current', (req, res) => {
+
+    let usuario=req.session.user
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({usuario})
+});
 
 router.post('/registro',
     passport.authenticate('registro', {

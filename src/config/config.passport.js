@@ -3,6 +3,7 @@ const github = require('passport-github2');
 const usuariosModelo = require('../dao/models/usuariosModel.js')
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
+const CartManager = require('../dao/CartManager.js');
 const initPassport = () => {
     passport.use('github', new github.Strategy(
         {
@@ -72,10 +73,13 @@ const initPassport = () => {
     },
         async (req, email, password, done) => {
             try {
-                const { nombre } = req.body;
+                const { first_name, last_name, age, email, password } = req.body;
 
-                if (!nombre || !email || !password) {
+                if (!first_name || !last_name || !email || !password || !age ) {
                     return done(null, false, req.flash('error', 'Complete todos los datos'));
+                } 
+                if (parseInt(age) < 1) {
+                    return done(null, false, { message: 'Error! la edad no puede ser menor de 1.' })
                 }
 
                 const regEmail = /^(([^<>()\[\]\\.,;:\s@”]+(\.[^<>()\[\]\\.,;:\s@”]+)*)|(“.+”))@((\[[0–9]{1,3}\.[0–9]{1,3}\.[0–9]{1,3}\.[0–9]{1,3}])|(([a-zA-Z\-0–9]+\.)+[a-zA-Z]{2,}))$/;
@@ -99,7 +103,9 @@ const initPassport = () => {
 
                 let usuario;
                 try {
-                    usuario = await usuariosModelo.create({ nombre, email, password: hashedPassword, rol });
+                    const carritoNuevo = await CartManager.createCartMongo();
+                    const carritoId = carritoNuevo._id;
+                    usuario = await usuariosModelo.create({ first_name, last_name, email, password: hashedPassword, rol, age });
                     return done(null, usuario);
                 } catch (error) {
                     return done(null, false, req.flash('error', 'Error inesperado, reintentelo.'));
