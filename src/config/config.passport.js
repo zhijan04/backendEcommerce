@@ -55,7 +55,7 @@ const initPassport = () => {
                 }
 
                 const userObject = {
-                    nombre: usuario.nombre,
+                    nombre: usuario.first_name,
                     email: usuario.email,
                     rol: usuario.rol
                 };
@@ -123,12 +123,11 @@ const initPassport = () => {
         try {
             const usuario = await usuariosModelo.findOne({ email: email });
             done(null, {
-                nombre: usuario.nombre,
+                nombre: usuario.first_name,
                 email: usuario.email,
                 rol: usuario.rol
             });
-
-            console.log("usuario",usuario)
+            console.log("usuario en deserealize", usuario)
         } catch (error) {
             done(error, null);
         }

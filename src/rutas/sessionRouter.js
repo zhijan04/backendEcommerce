@@ -10,11 +10,11 @@ router.post('/login', (req, res, next) => {
             return next(err)
         }
         if (!user) {
-            return res.redirect('/login?error=' + info.message)
+            return res.redirect('/login?error=Error al iniciar Sesión, verifique los campos e intentelo nuevamente.')
         }
 
         req.session.user = {
-            nombre: user.first_name,
+            nombre: user.nombre,
             email: user.email,
             rol: user.rol
         }
@@ -31,7 +31,7 @@ router.get('/current', (req, res) => {
 router.post('/registro',
     passport.authenticate('registro', {
         successRedirect: '/login?mensaje=Usuario registrado con éxito.',
-        failureRedirect: '/registro',
+        failureRedirect: '/registro?error= Ha ocurrido un error al registrar el usuario, verifique todos los campos.',
         failureFlash: true
     })
 );

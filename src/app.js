@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const ChatMessage = require('./dao/models/chatModel.js');
 const sessions = require('express-session');
 const mongoStore = require('connect-mongo')
+const flash = require('express-flash');
 const { routerSession } = require('./rutas/sessionRouter.js');
 
 const productRouter = require('./rutas/ProductRouter');
@@ -38,6 +39,7 @@ app.use(sessions(
         )
     }
 ))
+app.use(flash());
 initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
