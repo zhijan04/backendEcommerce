@@ -1,5 +1,6 @@
 const passport = require('passport');
 const github = require('passport-github2');
+const config = require('../config/config.js');
 const usuariosModelo = require('../dao/models/usuariosModel.js')
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
@@ -127,7 +128,6 @@ const initPassport = () => {
                 email: usuario.email,
                 rol: usuario.rol
             });
-            console.log("usuario en deserealize", usuario)
         } catch (error) {
             done(error, null);
         }

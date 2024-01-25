@@ -1,15 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const ProductManager = require('../dao/ProductManager.js');
 const productsRouter = require('../rutas/ProductRouter.js');
-const { getProductsMongo } = require('../dao/ProductManager.js');
-const { getAllCartsMongo } = require('../dao/CartManager.js')
-const cartsModelo = require('../dao/models/cartsModel.js');
-const ProductosModelo = require('../dao/models/productsModel.js');
+const viewController = require('../controllers/viewController.js');
 
-function handleServerError(res) {
-    res.status(500).json({ error: "Error de servidor" });
-}
 const auth = (req, res, next) => {
     if (!req.session.user && !req.session.usuario) {
         return res.redirect('/login');
@@ -26,128 +19,21 @@ const auth2 = (req, res, next) => {
     next();
 };
 
-router.get('/productos',auth, async (req, res) => {
-    try {
-        const limit = 4;
-        const page = parseInt(req.query.page) || 1;
-        const startIndex = (page - 1) * limit;
+router.get('/productos',auth, viewController.getProducts);
 
-        const products = await getProductsMongo(startIndex, limit);
+router.get('/carts', viewController.getCarts);
 
-        const final = products.products.map(objectMongo => {
-            const object = objectMongo.toObject({ getters: true, setters: false });
-            return object;
-        });
+router.get('/carts/:cid',auth, viewController.getOneCart);
 
-        const totalPages = Math.ceil(products.totalProducts / limit);
-        const prevPage = page > 1 ? page - 1 : null;
-        const nextPage = page < totalPages ? page + 1 : null;
+router.get('/realtimeproducts', viewController.getRealTimeProducts)
 
-        const response = {
-            status: "success",
-            payload: final,
-            totalPages: totalPages,
-            prevPage: prevPage,
-            nextPage: nextPage,
-            page: page,
-            hasPrevPage: prevPage !== null,
-            hasNextPage: nextPage !== null,
-            prevLink: prevPage !== null ? `/productos?page=${prevPage}` : null,
-            nextLink: nextPage !== null ? `/productos?page=${nextPage}` : null
-        };
-        console.log(response);
+router.get('/', viewController.homePage);
 
-        res.render('products',{ products: final, pagination: response });
+router.get('/registro',auth2, viewController.register);
 
-    } catch (error) {
-        console.log(error);
-        handleServerError(res);
-    }
-});
-router.get('/carts', async (req, res) => {
-    try {
-        const carts = await getAllCartsMongo();
-        res.status(200).json(carts);
-    } catch (error) {
-        handleError(res, error);
-    }
-});
+router.get('/login',auth2, viewController.login);
 
-function handleError(res, error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: "Error de servidor" });
-}
-
-router.get('/carts/:cid',auth, async (req, res) => {
-    try {
-        const cartId = req.params.cid;
-        const cart = await cartsModelo.findOne({ _id: cartId }).lean();
-
-        if (!cart) {
-            return res.status(404).json({ message: "Carrito no encontrado" });
-        }
-        const productsWithDetails = await Promise.all(cart.products.map(async (productInfo) => {
-            const product = await ProductosModelo.findById(productInfo.id).lean();
-            return {
-                product,
-                quantity: productInfo.quantity
-            };
-        }));
-        cart.products = productsWithDetails;
-        res.render('cartView', { products: cart.products });
-
-    } catch (error) {
-        handleError(res, error);
-    }
-});
-
-router.get('/realtimeproducts', async (req, res) => {
-    try {
-        const allProducts = await ProductosModelo.find().lean();
-        if (!allProducts || allProducts.length === 0) {
-            return res.status(404).json({ message: "No se encontraron productos" });
-        }
-        res.render('realTimeProducts', { products: allProducts});
-    } catch (error) {
-        console.error('Error al cargar productos en la vista en tiempo real:', error);
-        res.status(500).json({ error: "Error de servidor" });
-    }
-});
-
-router.get('/', async(req, res) => {
-    try {
-        
-    let usuario=req.session.user
-        const allProducts = await ProductosModelo.find().lean();
-        if (!allProducts || allProducts.length === 0) {
-            return res.status(404).json({ message: "No se encontraron productos" });
-        }
-        res.render('home', { products: allProducts, usuario});
-    } catch (error) {
-        console.error('Error al cargar productos en la vista en tiempo real:', error);
-        res.status(500).json({ error: "Error de servidor" });
-    }
-});
-router.get('/registro',auth2, (req, res) => {
-
-    let {error} = req.query
-    
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).render('registro', {error})
-});
-router.get('/login',auth2, (req, res) => {
-
-    let {error, mensaje} = req.query
-
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).render('login', {error, mensaje})
-});
-router.get('/perfil',auth, (req, res) => {
-
-    let usuario=req.session.user
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).render('perfil', {usuario})
-});
+router.get('/perfil',auth, viewController.getUser);
 
 router.use('/products', productsRouter);
 

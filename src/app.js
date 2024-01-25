@@ -3,7 +3,9 @@ const http = require('http');
 const socketIO = require('socket.io');
 const { engine } = require('express-handlebars');
 const app = express();
-const PORT = 3000;
+
+const config = require ("./config/config.js")
+const PORT = config.PORT;
 const path = require('path');
 const mongoose = require('mongoose');
 const ChatMessage = require('./dao/models/chatModel.js');
@@ -18,7 +20,6 @@ const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
 
 const productManager = new ProductManager(http);
-
 const server = http.createServer(app);
 const io = socketIO(server);
 const cookieParser = require('cookie-parser');
@@ -28,12 +29,12 @@ const passport = require ('passport')
 
 app.use(sessions(
     {
-        secret:"adminCod3r123",
+        secret:config.SECRETKEY,
         resave: true, saveUninitialized: true,
         store: mongoStore.create(
             {
-                mongoUrl:"mongodb+srv://leoben:coder@ecommerce.56z7kdm.mongodb.net/?retryWrites=true&w=majority",
-                mongoOptions:{dbName: 'ecommerce'},
+                mongoUrl:config.DBURL,
+                mongoOptions:{dbName: config.DBNAME},
                 ttl: 3600
             }
         )
@@ -119,8 +120,7 @@ server.listen(PORT, () => {
 });
 
 try {
-    //CAMBIAR LA CLAVE POR <PASSWORD>
-    mongoose.connect("mongodb+srv://leoben:coder@ecommerce.56z7kdm.mongodb.net/?retryWrites=true&w=majority", { dbName: 'ecommerce' })
+    mongoose.connect(config.DBURL, { dbName: config.DBNAME })
     console.log("db online")
 
 } catch (error) {
