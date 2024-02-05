@@ -8,6 +8,7 @@
         {{#each products}}
         <hr>
             <li>
+                
                 <strong>{{this.title}}</strong> - ${{this.price}}
                 <form action="/api/carts/6575ddb4801e056796a39171/product/{{this._id}}" method="post">
                     <input type="hidden" name="productId" value="{{this._id}}">

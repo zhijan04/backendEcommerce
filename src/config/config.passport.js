@@ -5,6 +5,8 @@ const usuariosModelo = require('../dao/models/usuariosModel.js')
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const CartManager = require('../dao/CartManager.js');
+
+
 const initPassport = () => {
     passport.use('github', new github.Strategy(
         {
@@ -58,7 +60,8 @@ const initPassport = () => {
                 const userObject = {
                     nombre: usuario.first_name,
                     email: usuario.email,
-                    rol: usuario.rol
+                    rol: usuario.rol,
+                    cartId: usuario._id
                 };
 
                 return done(null, userObject);
@@ -76,9 +79,9 @@ const initPassport = () => {
             try {
                 const { first_name, last_name, age, email, password } = req.body;
 
-                if (!first_name || !last_name || !email || !password || !age ) {
+                if (!first_name || !last_name || !email || !password || !age) {
                     return done(null, false, req.flash('error', 'Complete todos los datos'));
-                } 
+                }
                 if (parseInt(age) < 1) {
                     return done(null, false, { message: 'Error! la edad no puede ser menor de 1.' })
                 }
@@ -106,7 +109,8 @@ const initPassport = () => {
                 try {
                     const carritoNuevo = await CartManager.createCartMongo();
                     const carritoId = carritoNuevo._id;
-                    usuario = await usuariosModelo.create({ first_name, last_name, email, password: hashedPassword, rol, age });
+                    usuario = await usuariosModelo.create({ first_name, last_name, email, password: hashedPassword, rol, age, carritoId });
+                    console.log(usuario._id)
                     return done(null, usuario);
                 } catch (error) {
                     return done(null, false, req.flash('error', 'Error inesperado, reintentelo.'));
@@ -116,6 +120,7 @@ const initPassport = () => {
             }
         }
     ));
+
     passport.serializeUser((user, done) => {
         done(null, user.email);
     });
@@ -126,12 +131,14 @@ const initPassport = () => {
             done(null, {
                 nombre: usuario.first_name,
                 email: usuario.email,
-                rol: usuario.rol
+                rol: usuario.rol,
+                cartId: usuario._id
             });
         } catch (error) {
             done(error, null);
         }
     });
+    
 }
 
 module.exports = { initPassport, passport };

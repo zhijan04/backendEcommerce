@@ -2,7 +2,14 @@ const passport = require('passport');
 
 class sessionController{
     constructor(){}
-
+    static middlewareCheckAdmin = (req, res, next) => {
+        let usuario=req.session.user
+        if (usuario.rol === 'admin') {
+            return next();
+        } else {
+            res.status(403).json({ error: 'Acceso no autorizado. Se requieren privilegios de administrador.' });
+        }
+    };
     static async loginAuth(req, res, next){
         passport.authenticate('login', (err, user, info) => {
             if (err) {
@@ -15,13 +22,15 @@ class sessionController{
             req.session.user = {
                 nombre: user.nombre,
                 email: user.email,
-                rol: user.rol
+                rol: user.rol,
+                cartId: usuario._id
             }
             res.redirect('/');
         })(req, res, next)
     }
     static async currentUser(req, res){       
     let usuario=req.session.user
+
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json({usuario})
     }
@@ -39,6 +48,7 @@ class sessionController{
         error: "error al autenticar con gitHub"
     });
     }
+
 }
 
 module.exports = sessionController

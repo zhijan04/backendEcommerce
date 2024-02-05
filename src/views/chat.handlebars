@@ -26,6 +26,9 @@
             let email;
             do {
                 email = prompt("Ingrese su correo electrónico:");
+                            if (email === "adminCoder@coder.com"){
+                return alert("Unicamente usuarios pueden enviar mensajes en el chat.")
+            }
             } while (!isValidEmail(email));
             return email;
         }

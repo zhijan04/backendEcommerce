@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const productController = require ("../controllers/productController.js")
+const productController = require ("../controllers/productController.js");
+const sessionController = require ("../controllers/sessionController.js")
 
-router.get('/', productController.getProducts);
+router.get('/', productController.getProductos);
 
-router.get('/:pid', productController.getOneProduct);
+router.get('/:pid', productController.getOneProducto);
 
-router.delete('/:pid', productController.deleteProduct);
+router.delete('/:pid',sessionController.middlewareCheckAdmin, productController.deleteProducto);
 
-router.post('/', productController.addProduct)
+router.post('/',sessionController.middlewareCheckAdmin, productController.addProducto)
 
-router.put('/:pid', productController.updateProduct);
+router.put('/:pid',sessionController.middlewareCheckAdmin, productController.updateProducto);
 
 module.exports = router;

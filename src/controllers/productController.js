@@ -1,5 +1,6 @@
 const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo, getProductsMongo } = require('../dao/ProductManager.js');
 const productosModelo = require('../dao/models/productsModel.js');
+const productService = require("../services/productServices.js")
 
 
 function handleServerError(res) {
@@ -9,145 +10,52 @@ function handleServerError(res) {
 function validateFields(data, fields) {
     return fields.filter(field => !(field in data));
 }
-class productController{
-    constructor(){}
-        
-        static async getProducts(req,res){
-            try {
-                const { limit = 10, page = 1, query, filterType, filterValue, sort } = req.query;
-                const startIndex = (page - 1) * limit;
-        
-                let searchQuery = {};
-                if (query) {
-                    searchQuery = { $text: { $search: query } };
-                }
-                if (filterType && filterValue) {
-                    searchQuery[filterType] = filterValue;
-                }
-        
-                const sortOptions = {};
-                if (sort === 'asc') {
-                    sortOptions.price = 1;
-                } else if (sort === 'desc') {
-                    sortOptions.price = -1;
-                }
-        
-                const products = await productosModelo
-                    .find(searchQuery)
-                    .sort(sortOptions)
-                    .skip(startIndex)
-                    .limit(parseInt(limit));
-        
-                const totalProducts = await productosModelo.countDocuments(searchQuery);
-        
-                const totalPages = Math.ceil(totalProducts / limit);
-                const prevPage = page > 1 ? page - 1 : null;
-                const nextPage = page < totalPages ? page + 1 : null;
-        
-                const response = {
-                    status: 'success',
-                    products: products,
-                    totalPages: totalPages,
-                    prevPage: prevPage,
-                    nextPage: nextPage,
-                    page: page,
-                    hasPrevPage: prevPage !== null,
-                    hasNextPage: nextPage !== null,
-                    prevLink: prevPage !== null ? `/productos?page=${prevPage}&limit=${limit}` : null,
-                    nextLink: nextPage !== null ? `/productos?page=${nextPage}&limit=${limit}` : null
-                };
-        
-                res.status(200).json(response);
-            } catch (error) {
-                console.error('Error obteniendo los productos:', error);
-                res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
-            }
+
+class productController {
+
+    static async getProductos(req, res) {
+        try {
+            await productService.getProducts(req, res);
+        } catch (error) {
+            console.error('Error al obtener productos en el controlador:', error);
+            res.status(500).json({ error: 'Error al obtener productos' });
         }
-        static async getOneProduct(req, res){
-            try {
-                const productId = req.params.pid;
-                const product = await getProductById(productId);
-                if (product) {
-                    res.status(200).json(product);
-                } else {
-                    res.status(404).json({ message: "Producto no encontrado" });
-                }
-            } catch (error) {
-                handleServerError(res);
-            }
+    }
+
+
+    static async getOneProducto(req, res) {
+        try {
+            await productService.getOneProduct(req, res);
+        } catch (error) {
+            console.error('Error al obtener un producto en el controlador:', error);
+            res.status(500).json({ error: 'Error al obtener un producto' });
         }
-        static async deleteProduct(req, res){
-            try {
-                const io = req.app.get('socket');
-                const productId = req.params.pid;
-                const result = await deleteProductMongo(productId);
-                console.log(result)
-                if (result === "Producto eliminado correctamente.") {
-                    { io.emit("realTimeProductDelete", productId) }
-                    res.status(200).json({ message: result });
-                } else if (!result) {
-                    res.status(404).json({ message: "Producto no encontrado" });
-                } else {
-                    handleServerError(res);
-                }
-        
-            } catch (error) {
-                handleServerError(res);
-            }
+    }
+    static async deleteProducto(req, res) {
+        try {
+            await productService.deleteProduct(req, res);
+        } catch (error) {
+            console.error('Error al eliminar un producto en el controlador:', error);
+            res.status(500).json({ error: 'Error al eliminar un producto' });
         }
-        static async addProduct(req, res){
-            try {
-                const io = req.app.get('socket');
-                const { title, description, price, code, stock, category, status } = req.body;
-                const thumbnails = req.body.thumbnails || [];
-        
-                const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
-                const invalidFields = validateFields(req.body, requiredFields);
-                if (invalidFields.length > 0) {
-                    return res.status(400).json({ error: `Campos inválidos: ${invalidFields.join(', ')}` });
-                }
-                if (!Array.isArray(thumbnails)) {
-                    return res.status(400).json({ error: '"Thumbnails" únicamente permite formato de arreglo. ' });
-                }
-                const productData = {
-                    title,
-                    description,
-                    price,
-                    thumbnails,
-                    code,
-                    stock,
-                    category,
-                    status: status !== undefined ? status : true
-                };
-                const result = await addProductMongo(productData);
-                const response = {
-                    "Ya existe un producto con ese código.": 400,
-                    "Producto agregado correctamente.": 201,
-                    "Error al agregar el producto": 500,
-                };
-                const reStatus = response[result.message] || 500;
-                console.log(result.message, reStatus, result)
-                if (reStatus === 201) { io.emit("realTimeProduct", result.product) }
-                return res.status(reStatus).json({ message: result.message });
-        
-            } catch (error) {
-                console.log(error)
-                handleServerError(res);
-            }
+    }
+    static async addProducto(req, res) {
+        try {
+            await productService.addProduct(req, res);
+        } catch (error) {
+            console.error('Error al agregar un producto en el controlador:', error);
+            res.status(500).json({ error: 'Error al agregar un producto' });
         }
-        static async updateProduct(req, res) {
-            try {
-                const productId = parseInt(req.params.pid);
-                const updates = req.body;
-                const result = await updateProductMongo(productId, updates);
-                if (result) {
-                    res.status(200).json({ message: "Producto actualizado con exito" });
-                } else {
-                    res.status(404).json({ message: "Producto no encontrado" });
-                }
-            } catch (error) {
-                handleServerError(res);
-            }
+    }
+    static async updateProducto(req, res) {
+        try {
+            await productService.updateProduct(req, res);
+        } catch (error) {
+            console.error('Error al actualizar un producto en el controlador:', error);
+            res.status(500).json({ error: 'Error al actualizar un producto' });
         }
+    }
 }
+
+
 module.exports = productController

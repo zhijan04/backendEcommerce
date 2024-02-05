@@ -45,6 +45,11 @@ initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+});
+
 app.use(cookieParser());
 
 app.engine('handlebars', engine());
