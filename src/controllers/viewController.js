@@ -61,10 +61,12 @@ class viewController {
             handleError(res, error);
         }
     }
+    
     static async getOneCart(req, res) {
         try {
             const cartId = req.params.cid;
             const cart = await cartsModelo.findOne({ _id: cartId }).lean();
+            let user = req.session.user
 
             if (!cart) {
                 return res.status(404).json({ message: "Carrito no encontrado" });
@@ -77,7 +79,8 @@ class viewController {
                 };
             }));
             cart.products = productsWithDetails;
-            res.render('cartView', { products: cart.products });
+            
+            res.render('cartView', { products: cart.products, user});
 
         } catch (error) {
             handleError(res, error);

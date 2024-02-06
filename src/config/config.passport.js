@@ -108,8 +108,8 @@ const initPassport = () => {
                 let usuario;
                 try {
                     const carritoNuevo = await CartManager.createCartMongo();
-                    const carritoId = carritoNuevo._id;
-                    usuario = await usuariosModelo.create({ first_name, last_name, email, password: hashedPassword, rol, age, carritoId });
+                    const cartId = carritoNuevo._id;
+                    usuario = await usuariosModelo.create({ first_name, last_name, email, password: hashedPassword, rol, age, cartId });
                     console.log(usuario._id)
                     return done(null, usuario);
                 } catch (error) {
@@ -132,7 +132,7 @@ const initPassport = () => {
                 nombre: usuario.first_name,
                 email: usuario.email,
                 rol: usuario.rol,
-                cartId: usuario._id
+                cartId: usuario.cartId
             });
         } catch (error) {
             done(error, null);

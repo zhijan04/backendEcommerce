@@ -23,7 +23,7 @@ class sessionController{
                 nombre: user.nombre,
                 email: user.email,
                 rol: user.rol,
-                cartId: usuario._id
+                cartId: user.cartId
             }
             res.redirect('/');
         })(req, res, next)

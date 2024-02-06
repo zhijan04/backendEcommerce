@@ -4,7 +4,7 @@ const productsCollection = "tickets"
 const productsSchema = new mongoose.Schema(
     {
         code:{ type: String, unique: true},
-        purchase_datetime: String,
+        purchase_datetime: createdAt,
         amount: Number, 
         purchaser: String,
     }
