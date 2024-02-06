@@ -6,11 +6,11 @@
     <h1>Lista de Productos</h1>
     <ul>
         {{#each products}}
-        <hr>
+        <hr>{{log this}}
             <li>
                 
                 <strong>{{this.title}}</strong> - ${{this.price}}
-                <form action="/api/carts/6575ddb4801e056796a39171/product/{{this._id}}" method="post">
+                <form action="/api/carts/{{user.cartId}}/product/{{this._id}}" method="post">
                     <input type="hidden" name="productId" value="{{this._id}}">
                     <button type="submit">Agregar al Carrito</button>
                 </form>

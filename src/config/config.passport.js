@@ -61,7 +61,7 @@ const initPassport = () => {
                     nombre: usuario.first_name,
                     email: usuario.email,
                     rol: usuario.rol,
-                    cartId: usuario._id
+                    cartId: usuario.cartId
                 };
 
                 return done(null, userObject);

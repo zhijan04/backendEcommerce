@@ -20,7 +20,7 @@ class viewController {
             const limit = 4;
             const page = parseInt(req.query.page) || 1;
             const startIndex = (page - 1) * limit;
-
+            let user = req.session.user
             const products = await getProductsMongo(startIndex, limit);
 
             const final = products.products.map(objectMongo => {
@@ -46,7 +46,7 @@ class viewController {
             };
             console.log(response);
 
-            res.render('products', { products: final, pagination: response });
+            res.render('products', { products: final, pagination: response, user:user});
 
         } catch (error) {
             console.log(error);
@@ -65,7 +65,7 @@ class viewController {
     static async getOneCart(req, res) {
         try {
             const cartId = req.params.cid;
-            const cart = await cartsModelo.findOne({ _id: cartId }).lean();
+            const cart = await cartsModelo.findById(cartId).lean();
             let user = req.session.user
 
             if (!cart) {
