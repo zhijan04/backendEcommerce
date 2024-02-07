@@ -1,33 +1,61 @@
 <html lang="en">
+
 <head>
     <title>Lista de Productos</title>
 </head>
+
 <body>
     <h1>Lista de Productos</h1>
     <ul>
         {{#each products}}
-        <hr>{{log this}}
-            <li>
-                
-                <strong>{{this.title}}</strong> - ${{this.price}}
-                <form action="/api/carts/{{user.cartId}}/product/{{this._id}}" method="post">
-                    <input type="hidden" name="productId" value="{{this._id}}">
-                    <button type="submit">Agregar al Carrito</button>
-                </form>
-            </li>
+        <li>
+
+            <strong>{{this.title}}</strong> - ${{this.price}} - <br>--{{this.description}}
+            <br />
+            <button onclick="agregar('{{_id}}', '{{title}}', '{{user.cartId}}')"style="background-color: #138622; color: #fff; padding: 2px 1px; border: none; border-radius: 5px; cursor: pointer;">Agregar al carrito</button>
+            <hr>
+            </form>
+        </li>
         {{/each}}
     </ul>
     <div>
-        <a href="/carts/{{user.cartId}}">Ir al Carrito</a>
-        <hr>
+        <a href="/carts/{{user.cartId}}" style="background-color: #138622; color: #fff; padding: 5px 5px; border: none; border-radius: 5px; cursor: pointer;">Ir al Carrito</a>
+        <br> <br>
         {{#if pagination.hasPrevPage}}
-            <a href="{{pagination.prevLink}}">Página anterior</a>
-            <hr>
+        <a href="{{pagination.prevLink}}" style="background-color: #138fa5; color: #fff; padding: 5px 5px; border: none; border-radius: 5px; cursor: pointer;">Página anterior</a>
+        <hr>
         {{/if}}
-        
+
         {{#if pagination.hasNextPage}}
-            <a href="{{pagination.nextLink}}">Página siguiente</a>
+        <a href="{{pagination.nextLink}}" style="background-color: #138fa5; color: #fff; padding: 5px 5px; border: none; border-radius: 5px; cursor: pointer;">Página siguiente</a>
         {{/if}}
+
     </div>
 </body>
+
 </html>
+<script>
+    const agregar = async (id, title, cart) => {
+        const cartId = '{{user.cartId}}';
+        const url = `/api/carts/${cartId}/product/${id}`;
+
+        try {
+            let resultado = await fetch(url, {
+                method: "post"
+            });
+            let datos = await resultado.json();
+            console.log(datos);
+            if (resultado.ok) {
+                const confirmacion = window.confirm('Tu producto se ha agregado correctamente. ¿Quieres ir al carrito ahora?');
+
+                if (confirmacion) {
+                    window.location.href = `/carts/${cartId}`;
+                }
+            } else {
+                console.error('Error al agregar al carrito:', datos.message);
+            }
+        } catch (error) {
+            console.error('Error al agregar al carrito:', error);
+        }
+    }
+</script>

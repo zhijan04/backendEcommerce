@@ -9,13 +9,41 @@
         <p>Descripción: {{this.product.description}}</p>
         <p>Precio: ${{this.product.price}}</p>
         <p>Cantidad en el carrito: {{this.quantity}}</p>
+        <button onclick="eliminar('{{product._id}}', '{{product.title}}', '{{user.cartId}}')" style="background-color: #861313; color: #fff; padding: 2px 1px; border: none; border-radius: 5px; cursor: pointer;">Eliminar producto</button>
+
     </li>
     <hr>
     {{/each}}
 </ul>
 <div>
-    <a href="/productos">Ir a los productos</a>
+        <a href="/api/carts/{{user.cartId}}/purchase" style="background-color: #138622; color: #fff; padding: 5px 5px; border:5px; border-radius: 5px; cursor: pointer;">Finalizar compra</a>
+        <br>
+        <br>
+    <a href="/productos" style="background-color: #7c0772; color: #fff; padding: 5px 5px; border: none; border-radius: 5px; cursor: pointer;">Ir a los productos</a>
 </div>
 {{else}}
 <p>No hay productos en el carrito.</p>
 {{/if}}
+
+<script> 
+const eliminar = async (id, title, cart) => {
+    const cartId = '{{user.cartId}}';
+    const url = `/api/carts/${cartId}/product/${id}`;
+    try {
+        let resultado = await fetch(url, {
+            method: "DELETE"
+        });
+        if (resultado.ok) {
+            const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+            if (confirmacion) {
+                window.alert('Tu producto se ha eliminado correctamente.');
+                window.location.href = `/carts/${cartId}`;
+            }
+        } else {
+            console.error('Error al eliminar del carrito:', resultado.statusText);
+        }
+    } catch (error) {
+        console.error('Error al eliminar del carrito:', error);
+    }
+};
+    </script>

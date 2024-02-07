@@ -5,6 +5,11 @@ function handleError(res, error) {
     res.status(500).json({ error: "Error de servidor" });
 }
 
+
+const TicketsModel = require("../dao/models/ticketsModel.js")
+const ProductosModelo = require("../dao/models/productsModel.js")
+const CartsModelo = require("../dao/models/cartsModel.js")
+
 class cartController {
     constructor() { }
 
@@ -44,11 +49,11 @@ class cartController {
             const productId = req.params._id;
             const quantity = req.body.quantity;
             let user = req.session.user
-            
+
             const result = await addProductToCartMongo(cartId, productId.toString(), quantity,);
 
             if (result.status === 200) {
-                res.status(200).json({ success: true, message: "Producto agregado correctamente al carrito", cartId, user:user });
+                res.status(200).json({ success: true, message: "Producto agregado correctamente al carrito", cartId, user: user });
             } else {
                 res.status(result.status).json({ error: result.message });
             }
@@ -139,7 +144,13 @@ class cartController {
         } catch (error) {
             handleError(res, error);
         }
+
+    }
+    static async purchaseTicket(req, res) {
+
     }
 }
+
+
 
 module.exports = cartController;

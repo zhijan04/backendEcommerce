@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de Compra</title>
+</head>
+<body>
+    <h1>Ticket de Compra</h1>
+
+    <h2>Detalles del Ticket:</h2>
+    <p><strong>Usuario:</strong> {{ticket.user}}</p>
+    <p><strong>Fecha de Compra:</strong> {{ticket.purchaseDate}}</p>
+
+    <h2>Productos No Comprados:</h2>
+    {{#if productsNotPurchased.length}}
+        <ul>
+            {{#each productsNotPurchased}}
+                <li>{{this}}</li>
+            {{/each}}
+        </ul>
+    {{else}}
+        <p>Todos los productos fueron comprados con éxito.</p>
+    {{/if}}
+</body>
+</html>

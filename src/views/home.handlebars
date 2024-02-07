@@ -1,10 +1,10 @@
-<h1>Home page</h1>
-<hr>
-<p>Bienvenido <strong>{{usuario.nombre}}!</strong> - Rol: <strong>{{usuario.rol}}</strong></p>
-<hr>
+<h1 style="color: white;background-color: #840c8f;padding: 5px; border: line: 5px;padding-left: 40%; text-decoration:underline;border-radius: 5px">- Home page -</h1>
+<p style="font-size: 20px; margin-left: 38px">- Bienvenido <strong style="padding: 5px 1px; border: line: 5px; text-decoration:underline;">{{usuario.nombre}}!</strong> - Rol: <strong style="padding: 5px 1px; border: line: 5px; text-decoration:underline;">{{usuario.rol}}</strong> -</p>
+
 <h2>Productos disponibles.</h2>
-<ul id="productsHome">
+<ul id="productsHome" style="background-color: #004906; color: #fff; padding: 5px 1px; border: line; border-radius: 5px;">
     {{#each products}}
         <li id="product-{{this.id}}">{{this.title}} - {{this.description}} - ${{this.price}}</li>
+        <hr/>
     {{/each}}
 </ul>

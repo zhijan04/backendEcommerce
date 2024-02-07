@@ -1,15 +1,25 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const productsCollection = "tickets"
-const productsSchema = new mongoose.Schema(
+const  ticketsCollection = "tickets";
+
+const ticketSchema = new mongoose.Schema(
     {
-        code:{ type: String, unique: true},
-        purchase_datetime: createdAt,
-        amount: Number, 
-        purchaser: String,
-    }
+        code:{ type: String, unique: true, required: true},
+        amount: Number,
+        purchaser: String
+    },
+    {
+        timestamps:{
+            updatedAt:
+            'DateUltimateMod',
+            createdAt:'DateOn'
+        } 
+        },
+        {
+            strict:false
+        }
 )
 
-const productosModelo = mongoose.model (productsCollection, productsSchema)
+const ticketsModel = mongoose.model( ticketsCollection,  ticketSchema);
 
-module.exports =  productosModelo
+module.exports = ticketsModel;

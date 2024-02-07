@@ -1,4 +1,5 @@
 const passport = require('passport');
+const currentDTO = require('../DTO/currentDTO.js');
 
 class sessionController{
     constructor(){}
@@ -30,7 +31,7 @@ class sessionController{
     }
     static async currentUser(req, res){       
     let usuario=req.session.user
-
+    usuario = currentDTO(usuario)
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json({usuario})
     }
