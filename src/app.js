@@ -18,6 +18,7 @@ const productRouter = require('./rutas/ProductRouter');
 const ProductManager = require('./clases/ProductManager');
 const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
+const mockingModule = require ('./rutas/mockingModule.js')
 
 const productManager = new ProductManager(http);
 const server = http.createServer(app);
@@ -72,6 +73,15 @@ app.use('/realtimeproducts', viewRouter);
 
 app.get('/chat', (req, res) => {
     res.render('chat');
+});
+
+app.get('/mockingproducts', async (req, res) => {
+    try {
+        const mockedProducts = await mockingModule.generateMockedProducts(100);
+        res.json(mockedProducts);
+    } catch (error) {
+        res.status(500).json({ error: 'Error en la ruta /mockingproducts' });
+    }
 });
 
 

@@ -1,8 +1,13 @@
 const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo, getCartMongo } = require('../dao/CartManager.js')
+const { customizeError } = require ('../errorHandler.js')
 
-function handleError(res, error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: "Error de servidor" });
+function handleError(res, errorCode, additionalMessage) {
+    console.error('Error:', errorCode);
+    const customizedError = customizeError(errorCode);
+    if (additionalMessage) {
+        customizedError.message += `: ${additionalMessage}`;
+    }
+    res.status(500).json({ error: customizedError.message });
 }
 
 
@@ -18,7 +23,7 @@ class cartController {
             const carts = await getAllCartsMongo();
             res.status(200).json(carts);
         } catch (error) {
-            handleError(res, error);
+            handleError(res, 'CARTS_FETCH_FAILED', error.message);
         }
     }
 
@@ -40,7 +45,7 @@ class cartController {
             cart.products = productsWithDetails;
             res.render('cartView', { products: cart.products, user, cartId });
         } catch (error) {
-            handleError(res, error);
+            handleError(res, 'CART_NOT_FOUND', error.message);
         }
     }
     static async addProductToCart(req, res) {
@@ -58,7 +63,7 @@ class cartController {
                 res.status(result.status).json({ error: result.message });
             }
         } catch (error) {
-            handleError(res, error);
+            handleError(res, 'CART_ADDITION_FAILED', result.message);
         }
     }
     static async createCart(req, res) {
@@ -67,7 +72,7 @@ class cartController {
             if (cart) {
                 res.status(201).json({ message: `Carrito con id: ${cart._id} creado` });
             } else {
-                handleError(res, "Error creando carrito");
+                handleError(res, 'CART_CREATION_FAILED', "Error creando carrito");
             }
         } catch (error) {
             handleError(res, error);
@@ -83,7 +88,7 @@ class cartController {
             if (result.status === 200) {
                 res.status(200).json({ message: result.message, cart: result.cart });
             } else if (result.status === 404) {
-                res.status(404).json({ error: result.error });
+                handleError(res, 'PRODUCT_REMOVAL_FAILED', result.error);
             } else {
                 handleError(res, result.error);
             }
@@ -100,7 +105,7 @@ class cartController {
             if (result.status === 200) {
                 res.status(200).json({ message: result.message, cart: result.cart });
             } else if (result.status === 404) {
-                res.status(404).json({ error: result.error });
+                handleError(res, 'PRODUCTS_REMOVAL_FAILED', result.error);
             } else {
                 handleError(res, result.error);
             }
@@ -118,7 +123,7 @@ class cartController {
             if (result.status === 200) {
                 res.status(200).json({ message: result.message, cart: result.cart });
             } else if (result.status === 404) {
-                res.status(404).json({ error: result.error });
+                handleError(res, 'CART_UPDATE_FAILED', result.error);
             } else {
                 handleError(res, result.error);
             }
@@ -137,7 +142,7 @@ class cartController {
             if (result.status === 200) {
                 res.status(200).json({ message: result.message, cart: result.cart });
             } else if (result.status === 404) {
-                res.status(404).json({ error: result.error });
+                handleError(res, 'PRODUCT_QUANTITY_UPDATE_FAILED', result.error);
             } else {
                 handleError(res, result.error);
             }
