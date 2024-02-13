@@ -18,7 +18,7 @@ const productRouter = require('./rutas/ProductRouter');
 const ProductManager = require('./clases/ProductManager');
 const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
-const mockingModule = require ('./rutas/mockingModule.js')
+const mockingModule = require ('./DTO/mockingModule.js')
 
 const productManager = new ProductManager(http);
 const server = http.createServer(app);
