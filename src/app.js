@@ -72,7 +72,8 @@ app.use('/api/sessions', routerSession)
 app.use('/realtimeproducts', viewRouter);
 
 app.get('/chat', (req, res) => {
-    res.render('chat');
+    let usuario = req.session.user
+    res.render('chat', {usuario});
 });
 
 app.get('/mockingproducts', async (req, res) => {

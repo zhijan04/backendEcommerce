@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de Compra</title>
+</head>
+
+<body>
+    <h1>Ticket de Compra</h1>
+    <p>Código: {{ticket.code}}</p>
+    <p>Fecha de Compra: {{ticket.purchase_Datetime}}</p>
+    <p>Comprador: {{ticket.purchaser}}</p>
+
+    <h2>Productos Comprados</h2>
+    <ul>
+        {{#each productsPurchased}}
+            <li>{{this.quantity}} x {{this.id}} - Precio: {{this.price}}</li>
+        {{/each}}
+    </ul>
+</body>
+
+</html>

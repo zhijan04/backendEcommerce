@@ -27,7 +27,7 @@ router.get('/carts/:cid',auth, viewController.getOneCart);
 
 router.get('/realtimeproducts', viewController.getRealTimeProducts)
 
-router.get('/', viewController.homePage);
+router.get('/',auth, viewController.homePage);
 
 router.get('/registro',auth2, viewController.register);
 

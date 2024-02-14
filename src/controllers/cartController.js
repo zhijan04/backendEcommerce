@@ -155,62 +155,87 @@ class cartController {
         async function generateTicket(user, products) {
             try {
                 const lastTicket = await TicketsModel.findOne().sort({ code: -1 });
-
+    
                 const nextTicketNumber = lastTicket ? parseInt(lastTicket.code.replace('TICKET-', '')) + 1 : 1;
-
+    
                 const ticketCode = `TICKET-${nextTicketNumber}`;
-                const currentDate = new Date().toLocaleDateString();
+                const currentDatetime = new Date();
+                const totalAmount = calculateTotal(products);
 
                 const ticketDetails = {
-                    user: user,
+                    purchaser: user.email,
                     code: ticketCode,
-                    date: currentDate,
-                    products: products,
+                    purchase_Datetime: currentDatetime,
+                    amount: totalAmount,
                 };
-
+    
                 return ticketDetails;
             } catch (error) {
                 throw error;
             }
         }
-
+    
         try {
             const cartId = req.params.cid;
             const cart = await CartsModelo.findOne({ _id: cartId }).lean();
             const user = req.session.user;
-
+    
             if (!cart) {
                 return res.status(404).json({ message: "Carrito no encontrado" });
             }
-
+    
             const productsToPurchase = cart.products;
-
+    
             const productsPurchased = [];
-
+    
             for (const productInfo of productsToPurchase) {
                 const product = await ProductosModelo.findById(productInfo.id);
-
-                if (!product) {
+    
+                if (!product || !product.price) {
                     continue;
                 }
-
+    
                 if (productInfo.quantity <= product.stock) {
                     product.stock -= productInfo.quantity;
                     await product.save();
-
-                    productsPurchased.push(productInfo);
+    
+                    productsPurchased.push({
+                        id: productInfo.id,
+                        quantity: productInfo.quantity,
+                        price: product.price 
+                    });
                 }
             }
+    
             const ticketDetails = await generateTicket(user, productsPurchased);
             const ticket = new TicketsModel(ticketDetails);
             await ticket.save();
-            const remainingProducts = cart.products.filter(productInfo => !productsPurchased.includes(productInfo));
+    
+            const remainingProducts = cart.products.filter(productInfo =>
+                !productsPurchased.some(purchasedProduct => purchasedProduct.id === productInfo.id)
+            );
+            
             await updateCartMongo(cartId, remainingProducts);
-            res.status(200).json({ ticket: ticketDetails, productsPurchased });
+    
+            res.render('ticket', { ticket: ticketDetails, productsPurchased });
         } catch (error) {
             handleError(res, error);
         }
+        function calculateTotal(productsPurchased) {
+            return productsPurchased.reduce((total, item) => {
+                const itemPrice = parseFloat(item.price);
+        
+                if (itemPrice !== undefined && !isNaN(itemPrice)) {
+                    return total + itemPrice * item.quantity;
+                } else {
+                    console.error(`Error: Precio no válido para el producto ${item.id}`);
+                    console.log(item)
+                    return total;
+                }
+            }, 0);
+        }
     }
+
 }
 
 

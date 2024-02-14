@@ -17,28 +17,12 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
+        const userEmail = "{{usuario.email}}"; 
 
-        function promptForEmail() {
-            let email;
-            do {
-                email = prompt("Ingrese su correo electrónico:");
-                            if (email === "adminCoder@coder.com"){
-                return alert("Unicamente usuarios pueden enviar mensajes en el chat.")
-            }
-            } while (!isValidEmail(email));
-            return email;
-        }
-
-        const user = promptForEmail();
-
-        $(function () {
+     $(function () {
             const socket = io();
 
-            socket.emit('set username', user);
+            socket.emit('set username', userEmail);
 
             socket.on('chat history', (messages) => {
                 messages.forEach((message) => {
@@ -48,9 +32,16 @@
             socket.on('chat message', (data) => {
                 $('#messages').append($('<li>').text(`${data.user}: ${data.message}`));
             });
-
+                if (userEmail === "adminCoder@coder.com") {
+                    alert("Sólo los usuarios pueden enviar y ver los mensajes.");
+                    window.location.href = "/";
+                    return;
+                }
             $('form').submit(function (event) {
                 event.preventDefault();
+
+
+
                 const message = $('#m').val();
                 if (message.trim() !== '') {
                     socket.emit('chat message', message);
