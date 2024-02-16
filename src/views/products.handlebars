@@ -44,7 +44,6 @@
                 method: "post"
             });
             let datos = await resultado.json();
-            console.log(datos);
             if (resultado.ok) {
                 const confirmacion = window.confirm('Tu producto se ha agregado correctamente. ¿Quieres ir al carrito ahora?');
 
@@ -52,7 +51,7 @@
                     window.location.href = `/carts/${cartId}`;
                 }
             } else {
-                console.error('Error al agregar al carrito:', datos.message);
+                logger.error('Error al agregar al carrito:', datos.message);
             }
         } catch (error) {
             console.error('Error al agregar al carrito:', error);

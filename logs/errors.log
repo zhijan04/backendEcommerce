@@ -1,0 +1,101 @@
+[2024-02-16T18:55:06.738Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T18:55:12.417Z] DEBUG: Mensaje de debug
+[2024-02-16T18:55:12.418Z] HTTP: Mensaje HTTP
+[2024-02-16T18:55:12.418Z] INFO: Mensaje informativo
+[2024-02-16T18:55:12.418Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:55:12.418Z] ERROR: Mensaje de error
+[2024-02-16T18:55:14.251Z] DEBUG: Mensaje de debug
+[2024-02-16T18:55:14.251Z] HTTP: Mensaje HTTP
+[2024-02-16T18:55:14.251Z] INFO: Mensaje informativo
+[2024-02-16T18:55:14.251Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:55:14.251Z] ERROR: Mensaje de error
+[2024-02-16T18:56:24.734Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T18:56:28.593Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T18:56:29.203Z] DEBUG: Mensaje de debug
+[2024-02-16T18:56:29.203Z] HTTP: Mensaje HTTP
+[2024-02-16T18:56:29.203Z] INFO: Mensaje informativo
+[2024-02-16T18:56:29.203Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:56:29.203Z] ERROR: Mensaje de error
+[2024-02-16T18:57:01.252Z] DEBUG: Mensaje de debug
+[2024-02-16T18:57:01.252Z] HTTP: Mensaje HTTP
+[2024-02-16T18:57:01.252Z] INFO: Mensaje informativo
+[2024-02-16T18:57:01.252Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:57:01.252Z] ERROR: Mensaje de error
+[2024-02-16T18:57:04.077Z] DEBUG: Mensaje de debug
+[2024-02-16T18:57:04.077Z] HTTP: Mensaje HTTP
+[2024-02-16T18:57:04.078Z] INFO: Mensaje informativo
+[2024-02-16T18:57:04.078Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:57:04.078Z] ERROR: Mensaje de error
+[2024-02-16T18:57:15.578Z] DEBUG: Mensaje de debug
+[2024-02-16T18:57:15.578Z] HTTP: Mensaje HTTP
+[2024-02-16T18:57:15.578Z] INFO: Mensaje informativo
+[2024-02-16T18:57:15.578Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:57:15.578Z] ERROR: Mensaje de error
+[2024-02-16T18:57:19.461Z] DEBUG: Mensaje de debug
+[2024-02-16T18:57:19.461Z] HTTP: Mensaje HTTP
+[2024-02-16T18:57:19.461Z] INFO: Mensaje informativo
+[2024-02-16T18:57:19.461Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:57:19.461Z] ERROR: Mensaje de error
+[2024-02-16T18:57:26.452Z] DEBUG: Mensaje de debug
+[2024-02-16T18:57:26.452Z] HTTP: Mensaje HTTP
+[2024-02-16T18:57:26.452Z] INFO: Mensaje informativo
+[2024-02-16T18:57:26.452Z] WARNING: Mensaje de advertencia
+[2024-02-16T18:57:26.452Z] ERROR: Mensaje de error
+[2024-02-16T19:18:26.320Z] INFO: db online
+[2024-02-16T19:18:26.321Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T19:18:43.312Z] DEBUG: Mensaje de debug
+[2024-02-16T19:18:43.313Z] HTTP: Mensaje HTTP
+[2024-02-16T19:18:43.313Z] INFO: Mensaje informativo
+[2024-02-16T19:18:43.313Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:18:43.313Z] ERROR: Mensaje de error
+[2024-02-16T19:18:44.540Z] DEBUG: Mensaje de debug
+[2024-02-16T19:18:44.540Z] HTTP: Mensaje HTTP
+[2024-02-16T19:18:44.540Z] INFO: Mensaje informativo
+[2024-02-16T19:18:44.540Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:18:44.540Z] ERROR: Mensaje de error
+[2024-02-16T19:18:53.456Z] DEBUG: Mensaje de debug
+[2024-02-16T19:18:53.456Z] HTTP: Mensaje HTTP
+[2024-02-16T19:18:53.456Z] INFO: Mensaje informativo
+[2024-02-16T19:18:53.456Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:18:53.456Z] ERROR: Mensaje de error
+[2024-02-16T19:20:07.640Z] INFO: db online
+[2024-02-16T19:20:07.642Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T19:20:13.802Z] INFO: Usuario leo@test.com conectado
+[2024-02-16T19:20:21.617Z] INFO: Usuario desconectado
+[2024-02-16T19:20:24.994Z] DEBUG: Mensaje de debug
+[2024-02-16T19:20:24.994Z] HTTP: Mensaje HTTP
+[2024-02-16T19:20:24.994Z] INFO: Mensaje informativo
+[2024-02-16T19:20:24.994Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:20:24.995Z] ERROR: Mensaje de error
+[2024-02-16T19:20:29.581Z] DEBUG: Mensaje de debug
+[2024-02-16T19:20:29.582Z] HTTP: Mensaje HTTP
+[2024-02-16T19:20:29.582Z] INFO: Mensaje informativo
+[2024-02-16T19:20:29.582Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:20:29.583Z] ERROR: Mensaje de error
+[2024-02-16T19:20:37.237Z] DEBUG: Mensaje de debug
+[2024-02-16T19:20:37.238Z] HTTP: Mensaje HTTP
+[2024-02-16T19:20:37.238Z] INFO: Mensaje informativo
+[2024-02-16T19:20:37.238Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:20:37.238Z] ERROR: Mensaje de error
+[2024-02-16T19:21:28.638Z] INFO: db online
+[2024-02-16T19:21:28.640Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T19:21:31.143Z] DEBUG: Mensaje de debug
+[2024-02-16T19:21:31.143Z] HTTP: Mensaje HTTP
+[2024-02-16T19:21:31.144Z] INFO: Mensaje informativo
+[2024-02-16T19:21:31.144Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:21:31.144Z] ERROR: Mensaje de error
+[2024-02-16T19:24:53.899Z] INFO: db online
+[2024-02-16T19:24:53.900Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T19:24:55.747Z] DEBUG: Mensaje de debug
+[2024-02-16T19:24:55.748Z] HTTP: Mensaje HTTP
+[2024-02-16T19:24:55.748Z] INFO: Mensaje informativo
+[2024-02-16T19:24:59.957Z] DEBUG: Mensaje de debug
+[2024-02-16T19:24:59.957Z] HTTP: Mensaje HTTP
+[2024-02-16T19:24:59.957Z] INFO: Mensaje informativo
+[2024-02-16T19:25:13.942Z] INFO: db online
+[2024-02-16T19:25:13.944Z] INFO: Servidor en línea en el puerto 3000
+[2024-02-16T19:25:18.594Z] DEBUG: Mensaje de debug
+[2024-02-16T19:25:18.594Z] HTTP: Mensaje HTTP
+[2024-02-16T19:25:18.595Z] INFO: Mensaje informativo
+[2024-02-16T19:25:18.595Z] WARNING: Mensaje de advertencia
+[2024-02-16T19:25:18.595Z] ERROR: Mensaje de error

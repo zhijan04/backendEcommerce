@@ -4,7 +4,7 @@ const socketIO = require('socket.io');
 const { engine } = require('express-handlebars');
 const app = express();
 
-const config = require ("./config/config.js")
+const config = require("./config/config.js")
 const PORT = config.PORT;
 const path = require('path');
 const mongoose = require('mongoose');
@@ -14,28 +14,30 @@ const mongoStore = require('connect-mongo')
 const flash = require('express-flash');
 const { routerSession } = require('./rutas/sessionRouter.js');
 
+const logger = require('./controllers/logger.js');
+
 const productRouter = require('./rutas/ProductRouter');
 const ProductManager = require('./clases/ProductManager');
 const cartRouter = require('./rutas/cartRouter');
 const viewRouter = require('./rutas/ViewRouter');
-const mockingModule = require ('./DTO/mockingModule.js')
+const mockingModule = require('./DTO/mockingModule.js')
 
 const productManager = new ProductManager(http);
 const server = http.createServer(app);
 const io = socketIO(server);
 const cookieParser = require('cookie-parser');
 const { initPassport } = require('./config/config.passport.js');
-const passport = require ('passport')
+const passport = require('passport')
 
 
 app.use(sessions(
     {
-        secret:config.SECRETKEY,
+        secret: config.SECRETKEY,
         resave: true, saveUninitialized: true,
         store: mongoStore.create(
             {
-                mongoUrl:config.DBURL,
-                mongoOptions:{dbName: config.DBNAME},
+                mongoUrl: config.DBURL,
+                mongoOptions: { dbName: config.DBNAME },
                 ttl: 3600
             }
         )
@@ -73,7 +75,7 @@ app.use('/realtimeproducts', viewRouter);
 
 app.get('/chat', (req, res) => {
     let usuario = req.session.user
-    res.render('chat', {usuario});
+    res.render('chat', { usuario });
 });
 
 app.get('/mockingproducts', async (req, res) => {
@@ -84,6 +86,16 @@ app.get('/mockingproducts', async (req, res) => {
         res.status(500).json({ error: 'Error en la ruta /mockingproducts' });
     }
 });
+app.get('/loggerTest', (req, res) => {
+    logger.debug('Mensaje de debug');
+    logger.http('Mensaje HTTP');
+    logger.info('Mensaje informativo');
+    logger.warning('Mensaje de advertencia');
+    logger.error('Mensaje de error');
+    logger.fatal('Mensaje fatal');
+
+    res.send('Verifica la consola o el archivo "logs/errors.log" para ver los logs.');
+});
 
 
 app.use((req, res) => {
@@ -91,21 +103,19 @@ app.use((req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('Usuario conectado');
-
     socket.on('set username', (username) => {
         socket.username = username;
-        console.log(`Usuario ${username} conectado`);
+        logger.info(`Usuario ${username} conectado`);
 
         ChatMessage.find().then((messages) => {
             socket.emit('chat history', messages);
         }).catch((err) => {
-            console.error(err);
+            logger.error(err);
         });
     });
     socket.on('chat message', (message) => {
         if (!socket.username) {
-            console.error('Usuario sin nombre intentando enviar un mensaje');
+            logger.error('Usuario sin nombre intentando enviar un mensaje');
             return;
         }
 
@@ -120,25 +130,25 @@ io.on('connection', (socket) => {
                 io.emit('chat message', data);
             })
             .catch((err) => {
-                console.error(err);
+                logger.error(err);
             });
     });
 
     socket.on('disconnect', () => {
-        console.log('Usuario desconectado');
+        logger.info('Usuario desconectado');
     });
 });
 
 app.set("socket", io)
 
 server.listen(PORT, () => {
-    console.log(`Servidor en línea en el puerto ${PORT}`);
+    logger.info(`Servidor en línea en el puerto ${PORT}`);
 });
 
 try {
     mongoose.connect(config.DBURL, { dbName: config.DBNAME })
-    console.log("db online")
+    logger.info("db online")
 
 } catch (error) {
-    console.log(error.message)
+    logger.error(error.message)
 }

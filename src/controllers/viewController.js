@@ -5,7 +5,7 @@ const cartsModelo = require('../dao/models/cartsModel.js');
 const ProductosModelo = require('../dao/models/productsModel.js');
 
 function handleError(res, error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
     res.status(500).json({ error: "Error de servidor" });
 }
 
@@ -44,12 +44,11 @@ class viewController {
                 prevLink: prevPage !== null ? `/productos?page=${prevPage}` : null,
                 nextLink: nextPage !== null ? `/productos?page=${nextPage}` : null
             };
-            console.log(response);
 
             res.render('products', { products: final, pagination: response, user:user});
 
         } catch (error) {
-            console.log(error);
+            logger.log(error);
             handleServerError(res);
         }
     }
@@ -94,7 +93,7 @@ class viewController {
             }
             res.render('realTimeProducts', { products: allProducts });
         } catch (error) {
-            console.error('Error al cargar productos en la vista en tiempo real:', error);
+            logger.error('Error al cargar productos en la vista en tiempo real:', error);
             res.status(500).json({ error: "Error de servidor" });
         }
     }
@@ -107,7 +106,7 @@ class viewController {
             }
             res.render('home', { products: allProducts, usuario });
         } catch (error) {
-            console.error('Error al cargar productos en la vista en tiempo real:', error);
+            logger.error('Error al cargar productos en la vista en tiempo real:', error);
             res.status(500).json({ error: "Error de servidor" });
         }
     }

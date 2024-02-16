@@ -4,7 +4,7 @@ const productService = require("../services/productServices.js")
 const { customizeError, errorDcitionary } = require ("../errorHandler.js")
 
 function handleError(res, errorCode) {
-    console.error('Error:', errorCode);
+    logger.error('Error:', errorCode);
     const customizedError = customizeError(errorCode);
     res.status(500).json({ error: customizedError.message });
 }
@@ -19,7 +19,7 @@ class productController {
         try {
             await productService.getProducts(req, res);
         } catch (error) {
-            console.error('Error al obtener productos en el controlador:', error);
+            logger.error('Error al obtener productos en el controlador:', error);
             handleError(res, 'PRODUCTS_FETCH_FAILED');
         }
     }
@@ -29,7 +29,7 @@ class productController {
         try {
             await productService.getOneProduct(req, res);
         } catch (error) {
-            console.error('Error al obtener un producto en el controlador:', error);
+            logger.error('Error al obtener un producto en el controlador:', error);
             handleError(res, 'PRODUCT_NOT_FOUND');
         }
     }
@@ -37,7 +37,7 @@ class productController {
         try {
             await productService.deleteProduct(req, res);
         } catch (error) {
-            console.error('Error al eliminar un producto en el controlador:', error);
+            logger.error('Error al eliminar un producto en el controlador:', error);
             handleError(res, 'PRODUCT_DELETION_FAILED');
         }
     }
@@ -45,7 +45,7 @@ class productController {
         try {
             await productService.addProduct(req, res);
         } catch (error) {
-            console.error('Error al agregar un producto en el controlador:', error);
+            logger.error('Error al agregar un producto en el controlador:', error);
             handleError(res, 'PRODUCT_CREATION_FAILED');
         }
     }
@@ -53,7 +53,7 @@ class productController {
         try {
             await productService.updateProduct(req, res);
         } catch (error) {
-            console.error('Error al actualizar un producto en el controlador:', error);
+            logger.error('Error al actualizar un producto en el controlador:', error);
             handleError(res, 'PRODUCT_UPDATED_FAILED');
         }
     }
