@@ -37,4 +37,12 @@ router.get('/perfil',auth, viewController.getUser);
 
 router.use('/products', productsRouter);
 
+router.get('/restablecer', auth2, viewController.formRestContraseña)
+
+router.post('/restablecerToken', auth2, viewController.enviarToken)
+
+router.get('/restablecerPassword/:Token', auth2, viewController.validarToken)
+
+router.post('/restablecerPassword/:Token', viewController.actualizarPassword)
+
 module.exports = router;

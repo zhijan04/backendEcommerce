@@ -1,0 +1,19 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+
+    <h2>Recuperación de Contraseña</h2>
+    {{{htmlExpires}}}
+    {{{htmlError}}}
+    <hr>
+    <form action="/restablecerToken" method="post">
+        <input type="email" name="email" placeholder="Correo electrónico" required>
+        <input type="submit" value="Enviar correo de recuperación" style="text-decoration: none; padding: 2px; background-color: #000000; color: #ffffff; border-radius: 5px; display: inline-block;">
+    </form>
+    <br>
+    <a href="/login" style="text-decoration: none; padding: 2px; background-color: #15791d; color: #ffffff; border-radius: 5px; display: inline-block;">Iniciar sesión</a>
+</body>
+</html>

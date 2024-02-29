@@ -5,10 +5,10 @@ class sessionController{
     constructor(){}
     static middlewareCheckAdmin = (req, res, next) => {
         let usuario=req.session.user
-        if (usuario.rol === 'admin') {
+        if (usuario.rol === 'admin' || usuario.rol === 'premium') {
             return next();
         } else {
-            res.status(403).json({ error: 'Acceso no autorizado. Se requieren privilegios de administrador.' });
+            res.status(403).json({ error: 'Acceso no autorizado. Se requieren privilegios de administrador o premium.' });
         }
     };
     static async loginAuth(req, res, next){

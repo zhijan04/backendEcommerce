@@ -16,10 +16,11 @@ const { routerSession } = require('./rutas/sessionRouter.js');
 
 const logger = require('./controllers/logger.js');
 
-const productRouter = require('./rutas/ProductRouter');
-const ProductManager = require('./clases/ProductManager');
-const cartRouter = require('./rutas/cartRouter');
-const viewRouter = require('./rutas/ViewRouter');
+const productRouter = require('./rutas/ProductRouter.js');
+const ProductManager = require('./clases/ProductManager.js');
+const cartRouter = require('./rutas/cartRouter.js');
+const viewRouter = require('./rutas/ViewRouter.js');
+const userRouter = require('./rutas/userRouter.js');
 const mockingModule = require('./DTO/mockingModule.js')
 
 const productManager = new ProductManager(http);
@@ -70,6 +71,8 @@ app.use('/api/carts', cartRouter);
 app.use('/', viewRouter);
 
 app.use('/api/sessions', routerSession)
+
+app.use('/api/users', userRouter);
 
 app.use('/realtimeproducts', viewRouter);
 

@@ -1,4 +1,4 @@
-const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo, getCartMongo } = require('../dao/CartManager.js')
+const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo, getCartMongo, getProductById } = require('../dao/CartManager.js')
 const { customizeError } = require ('../errorHandler.js')
 
 function handleError(res, errorCode, additionalMessage) {
@@ -30,14 +30,15 @@ class cartController {
 
     static async getIndvCart(req, res) {
         try {
+            
             const cartId = req.params.cid;
-            const cart = await cartsModelo.findOne({ _id: cartId }).lean();
+            const cart = await CartsModelo.findOne({ _id: cartId }).lean();
             let user = req.session.user
             if (!cart) {
                 return res.status(404).json({ message: "Carrito no encontrado" });
             }
             const productsWithDetails = await Promise.all(cart.products.map(async (productInfo) => {
-                const product = await ProductosModelo.findById(productInfo.id).lean();
+                const product = await ProductosModelo.findById(productInfo.id);
                 return {
                     product,
                     quantity: productInfo.quantity
@@ -56,6 +57,13 @@ class cartController {
             const quantity = req.body.quantity;
             let user = req.session.user
 
+            if (user && user.rol === 'premium') {
+                const product = await getProductById(productId);
+    
+                if (product && product.owner === user.email) {
+                    return res.status(403).json({ message: 'Acceso no autorizado. No puedes agregar tu propio producto al carrito.' });
+                }
+            }
             const result = await addProductToCartMongo(cartId, productId.toString(), quantity,);
 
             if (result.status === 200) {
@@ -64,7 +72,7 @@ class cartController {
                 res.status(result.status).json({ error: result.message });
             }
         } catch (error) {
-            handleError(res, 'CART_ADDITION_FAILED', result.message);
+            console.log("no se ha podido agregar un producto al carrito", error);
         }
     }
     static async createCart(req, res) {

@@ -9,6 +9,7 @@ const productsSchema = new mongoose.Schema(
         price: Number,
         thumbnails: Array, 
         stock: Number,
+        owner: String,
         category: String,
         status: {
             type: Boolean,

@@ -3,6 +3,14 @@ const { getProductsMongo } = require('../dao/ProductManager.js');
 const { getAllCartsMongo } = require('../dao/CartManager.js')
 const cartsModelo = require('../dao/models/cartsModel.js');
 const ProductosModelo = require('../dao/models/productsModel.js');
+const logger = require ('../controllers/logger.js')
+const crypto = require ('crypto')
+const bcrypt = require('bcrypt')
+const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
+const handlebars = require('handlebars');
+const Usuario = require ('../dao/models/usuariosModel.js')
+
 
 function handleError(res, error) {
     logger.error('Error:', error);
@@ -125,5 +133,112 @@ class viewController {
         res.setHeader('Content-Type', 'text/html');
         res.status(200).render('perfil', { usuario })
     }
-}
+    static async formRestContraseña(req, res) {
+        res.render('restablecerContraseña')
+    }
+    static async enviarToken(req, res, next) {
+        const email = req.body.email;
+        const usuario = await Usuario.findOne({ email });
+    
+        if (!usuario) {
+            logger.error('error, usuario no encontrado');
+            const sourceError = '<p>{{errorMessage}}</p>';
+            const templateError = handlebars.compile(sourceError);
+            const htmlError = templateError({ errorMessage: 'Hubo un error al enviar el correo electrónico. Inténtalo con otra dirección de correo.' });
+            return res.render('login', {htmlError});
+        }
+    
+        usuario.Token = crypto.randomBytes(20).toString('hex');
+        usuario.expira = new Date(Date.now() + 60 * 60 * 1000);
+        await usuario.save();
+    
+        const ResetUrl = `http://${req.headers.host}/restablecerPassword/${usuario.Token}`;
+    
+        // Configuración del transporte de nodemailer (ajusta según tu proveedor de correo)
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.office365.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: 'testeoCoderHouseLeonardoBenitez@outlook.com.ar',
+                pass: 'minero123'
+            }
+        });
+    
+        const mailOptions = {
+            from: 'testeoCoderHouseLeonardoBenitez@outlook.com.ar',
+            to: email,
+            subject: 'Restablecer Contraseña',
+            html: `<p>¡Hola! Hemos visto que quieres restablecer tu contraseña... </p><p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p><a href="${ResetUrl}">${ResetUrl}</a>`
+        };
+    
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                logger.error('Error al enviar el correo electrónico:', error);
+                return res.redirect('/restablecer');
+            }
+    
+            logger.info('eMail con restablecer contraseña enviado.');
+            const source = '<p>{{message}}</p>';
+            const template = handlebars.compile(source);
+            const html = template({ message: 'Se ha enviado el correo electrónico correctamente. ¡Verifica tu bandeja de entrada!' });
+            return res.render('login', { html });
+        });
+    }
+    static async validarToken(req, res){
+        const Token = req.params.Token
+        const usuario = await Usuario.findOne({Token})
+        if (!usuario || usuario.expira < new Date()) {
+            logger.error('Error, token expirado o usuario no encontrado');
+            const sourceExpires = '<p>{{message}}</p>';
+            const templateExpires = handlebars.compile(sourceExpires);
+            const htmlExpires = templateExpires({ message: '¡El email ha expirado! intentalo nuevamente.' });
+            return res.render('restablecerContraseña',{htmlExpires} );
+        }
+        res.render('resetPassword')
+    }
+    static async actualizarPassword(req, res){
+        try {
+            const usuario = await Usuario.findOne({ Token: req.params.Token });
+    
+            if(!usuario){
+                logger.error('Error, usuario no encontrado');
+                res.redirect('/restablecer');
+            }
+            const nuevaContraseña = req.body.Contraseña;
+            const esNuevaContraseña = await bcrypt.compare(nuevaContraseña, usuario.password);
+    
+            if (esNuevaContraseña) {
+                logger.error('Error, la nueva contraseña es la misma que la actual');
+                
+                const sourceError = '<p>{{errorMessage}}</p>';
+                const templateError = handlebars.compile(sourceError);
+                const htmlError = templateError({ errorMessage: 'La nueva contraseña no puede ser la misma que la actual.' });
+    
+                return res.render('restablecerContraseña', { htmlError });
+            }
+
+            const hashedPassword = await bcrypt.hash(req.body.Contraseña, 10);
+            usuario.password = hashedPassword;
+            await usuario.save();
+    
+            logger.info('eMail con restablecer contraseña enviado.');
+    
+            const source = '<p>{{message}}</p>';
+            const template = handlebars.compile(source);
+            const html = template({ message: 'Se ha enviado el correo electrónico correctamente. ¡Verifica tu bandeja de entrada!' });
+    
+            const sourceSuccess = '<p>{{message}}</p>';
+            const templateSuccess = handlebars.compile(sourceSuccess);
+            const htmlSuccess = templateSuccess({ message: '¡Se ha enviado modificado la contraseña con éxito!' });
+
+            logger.info('Correcto, se ha cambiado la contraseña');
+            res.render('login', {htmlSuccess});
+        } catch (error) {
+            logger.error('Error al actualizar la contraseña', error);
+            res.redirect('/restablecer');
+        }
+    }
+    }
+
 module.exports = viewController;

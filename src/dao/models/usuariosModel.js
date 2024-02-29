@@ -14,9 +14,11 @@ const usuariosEsquema = new mongoose.Schema(
             type: String,
             default: 'user'
         },
+        Token: String,
+        expira: Date,
         cartId: String
     },
-    {
+        {
         timestamps: {
             updatedAt: "FechaUltMod", 
             createdAt: "FechaAlta"

@@ -79,6 +79,15 @@ class productService{
             try {
                 const io = req.app.get('socket');
                 const productId = req.params.pid;
+                const product = await getProductById(productId);
+                if (!product) {
+                    return res.status(404).json({ message: 'Producto no encontrado' });
+                }
+                const user = req.session.user;
+            if (user.rol === 'premium' && product.product.owner !== user.email) {
+                return res.status(403).json({ error: 'No tienes permisos para borrar este producto' });
+            }
+
                 const result = await deleteProductMongo(productId);
                 console.log(result)
                 if (result === "Producto eliminado correctamente.") {
@@ -94,7 +103,7 @@ class productService{
                 handleServerError(res);
             }
         }
-        static async addProduct(req, res){
+        static async addProduct(req, res) {
             try {
                 const io = req.app.get('socket');
                 const { title, description, price, code, stock, category, status } = req.body;
@@ -108,6 +117,10 @@ class productService{
                 if (!Array.isArray(thumbnails)) {
                     return res.status(400).json({ error: '"Thumbnails" únicamente permite formato de arreglo. ' });
                 }
+        
+                const user = req.session.user;
+                const userEmail = user.email || "admin";
+        
                 const productData = {
                     title,
                     description,
@@ -116,29 +129,39 @@ class productService{
                     code,
                     stock,
                     category,
-                    status: status !== undefined ? status : true
+                    status: status !== undefined ? status : true,
+                    owner: userEmail
                 };
+        
                 const result = await addProductMongo(productData);
+        
                 const response = {
                     "Ya existe un producto con ese código.": 400,
                     "Producto agregado correctamente.": 201,
                     "Error al agregar el producto": 500,
                 };
                 const reStatus = response[result.message] || 500;
-                console.log(result.message, reStatus, result)
-                if (reStatus === 201) { io.emit("realTimeProduct", result.product) }
+                console.log(result.message, reStatus, result);
+                if (reStatus === 201) {
+                    io.emit("realTimeProduct", result.product);
+                }
                 return res.status(reStatus).json({ message: result.message });
         
             } catch (error) {
-                console.log(error)
+                console.log(error);
                 handleServerError(res);
             }
         }
         static async updateProduct(req, res) {
             try {
-                const productId = req.params.pid;
+                const productId = parseInt(req.params.pid);
                 const updates = req.body;
+                const product = await getProductById(productId);
                 const result = await updateProductMongo(productId, updates);
+                const user = req.session.user;
+                if (product.product.owner !== user.email) {
+                    return res.status(403).json({ error: 'No tienes permisos para editar este producto' });
+                }
                 if (result) {
                     res.status(200).json({ message: "Producto actualizado con exito" });
                 } else {

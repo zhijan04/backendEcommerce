@@ -1,4 +1,15 @@
 const cartsModelo = require('../dao/models/cartsModel.js')
+const productosModelo = require('../dao/models/productsModel.js')
+
+async function getProductById(productId) {
+    try {
+        const product = await productosModelo.findOne({ _id: productId });
+        return product;
+    } catch (error) {
+        console.error('Error obteniendo el producto por ID:', error);
+        return null;
+    }
+}
 
 async function createCart() {
     try {
@@ -184,5 +195,6 @@ module.exports = {
     removeProductFromCartMongo: removeProductFromCart,
     updateCartMongo: updateCart,
     updateProductQuantityMongo: updateProductQuantity,
-    removeAllProductsFromCartMongo: removeAllProductsFromCart
+    removeAllProductsFromCartMongo: removeAllProductsFromCart,
+    getProductById: getProductById
 }
