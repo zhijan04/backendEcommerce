@@ -45,7 +45,7 @@ class cartController {
                 };
             }));
             cart.products = productsWithDetails;
-            res.render('cartView', { products: cart.products, user, cartId });
+            res.json({ products: cart.products, user, cartId });
         } catch (error) {
             handleError(res, 'CART_NOT_FOUND', error.message);
         }

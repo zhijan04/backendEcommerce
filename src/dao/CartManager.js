@@ -144,13 +144,12 @@ async function updateProductQuantity(cartId, productId, updatedQuantity) {
         const productIndex = cart.products.findIndex(product => product.id === productId);
 
         if (productIndex !== -1) {
-            // Actualizar la cantidad del producto
             cart.products[productIndex].quantity = updatedQuantity;
 
             const updatedCart = await cartsModelo.findOneAndUpdate(
                 { _id: cartId },
                 { $set: { products: cart.products } },
-                { new: true } // Devuelve el carrito actualizado
+                { new: true } 
             );
 
             return { message: "Cantidad del producto actualizada correctamente.", status: 200, cart: updatedCart };
@@ -170,13 +169,12 @@ async function removeAllProductsFromCart(cartId) {
             return { status: 404, error: "Carrito no encontrado." };
         }
 
-        // Eliminar todos los productos del carrito
         cart.products = [];
 
         const updatedCart = await cartsModelo.findOneAndUpdate(
             { _id: cartId },
             { $set: { products: cart.products } },
-            { new: true } // Devuelve el carrito actualizado
+            { new: true } 
         );
 
         return { message: "Todos los productos del carrito eliminados correctamente.", status: 200, cart: updatedCart };

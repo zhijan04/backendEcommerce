@@ -1,0 +1,185 @@
+openapi: 3.0.0
+info:
+  title: API Backend Ecommerce - Products
+  version: 1.0.0
+  description: Documentación de la API para el manejo de productos
+paths:
+  /api/products:
+    get:
+      summary: Obtener lista de productos
+      tags:
+      - Products
+      description: Obtiene una lista de productos con opciones de paginación y filtrado.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Número máximo de productos a devolver.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de la página a devolver.
+
+      responses:
+        '200':
+          description: Éxito. Devuelve la lista de productos.
+          content:
+            application/json:
+              example:
+                status: success
+                products: [...]
+                totalPages: 5
+                prevPage: 1
+                nextPage: 3
+
+  /api/products/{pid}:
+    get:
+      summary: Obtener un producto por ID
+      tags:
+      - Products
+      description: Obtiene un producto específico según su ID.
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: integer
+          description: ID del producto.
+
+      responses:
+        '200':
+          description: Éxito. Devuelve el producto encontrado.
+          content:
+            application/json:
+                title: Producto 1
+                description: Descripción del producto 1
+                price: 19.99
+
+      '404':
+        description: Producto no encontrado.
+        content:
+          application/json:
+              message: Producto no encontrado
+
+    delete:
+      summary: Eliminar un producto por ID
+      tags:
+      - Products
+      description: Elimina un producto específico según su ID.
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: integer
+          description: ID del producto.
+
+      responses:
+        '200':
+          description: Éxito. Producto eliminado correctamente.
+          content:
+            application/json:
+                message: Producto eliminado correctamente.
+
+        '404':
+          description: Producto no encontrado.
+          content:
+            application/json:
+              example:
+                message: Producto no encontrado.
+
+        '500':
+          description: Error al obtener rol de usuario.
+          content:
+            application/json:
+              example:
+                message: Error, producto no eliminado debido al rol.
+
+    
+    put:
+      summary: Actualizar un producto por ID
+      tags:
+      - Products
+      description: Actualiza un producto específico según su ID.
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: integer
+          description: ID del producto a actualizar.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              title: Producto Actualizado
+              description: Descripción actualizada del producto
+              price: 39.99
+
+      responses:
+        '200':
+          description: Éxito. Producto actualizado correctamente.
+          content:
+            application/json:
+              example:
+                message: Producto actualizado correctamente.
+
+        '404':
+          description: Producto no encontrado.
+          content:
+            application/json:
+              example:
+                message: Producto no encontrado
+
+        '403':
+          description: No tienes permisos para editar este producto.
+          content:
+            application/json:
+              example:
+                error: No tienes permisos para editar este producto
+
+        '500':
+          description: Error al obtener rol de usuario.
+          content:
+            application/json:
+              example:
+                message: Error, producto no eliminado debido al rol.
+
+
+  /api/products/:
+    post:
+      summary: Agregar un nuevo producto
+      tags:
+      - Products
+      description: Agrega un nuevo producto a la base de datos.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              title: Nuevo Producto
+              description: Descripción del nuevo producto
+              price: 29.99
+
+      responses:
+        '201':
+          description: Éxito. Producto agregado correctamente.
+          content:
+            application/json:
+              example:
+                message: Producto agregado correctamente.
+
+        '500':
+          description: Error. Producto no agregado debido al rol.
+          content:
+            application/json:
+              example:
+                message: Producto no agregado.
+
+

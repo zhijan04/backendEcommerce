@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: API Backend Ecommerce - Carts
+  version: 1.0.0
+  description: Documentación de la API para el manejo de carritos
+
+paths:
+  /api/carts:
+    post:
+      summary: Crear un nuevo carrito
+      tags:
+      - Carts
+      description: Crea un nuevo carrito vacío.
+      responses:
+        '201':
+          description: Éxito. Carrito creado correctamente.
+          content:
+            application/json:
+              example:
+                message: Carrito creado correctamente.
+                cart: {_id: '123', products: []}
+
+        '500':
+          description: Error al crear el carrito.
+          content:
+            application/json:
+              example:
+                status: 500
+                error: Error al crear un carrito.
+
+    get:
+      summary: Obtener todos los carritos con productos
+      tags:
+      - Carts
+      description: Obtiene una lista de todos los carritos con sus productos.
+      responses:
+        '200':
+          description: Éxito. Lista de carritos con productos.
+          content:
+            application/json:
+              example:
+                carts:
+                  - _id: '123'
+                    products:
+                      - id: '456'
+                        quantity: 2
+                  - _id: '789'
+                    products: []
+
+        '500':
+          description: Error al obtener los carritos.
+          content:
+            application/json:
+              example:
+                status: 500
+                error: Error al obtener los carritos.
+
+  /api/carts/{cartId}:
+    get:
+      summary: Obtener un carrito por ID
+      tags:
+      - Carts
+      description: Obtiene un carrito específico por su ID.
+      parameters:
+        - in: path
+          name: cartId
+          required: true
+          schema:
+            type: string
+          description: ID del carrito.
+      responses:
+        '200':
+          description: Éxito. Carrito encontrado.
+          content:
+            application/json:
+              example:
+                message: Carrito encontrado correctamente.
+                cart:
+                  _id: '123'
+                  products:
+                    - id: '456'
+                      quantity: 2
+        '404':
+          description: Carrito no encontrado.
+          content:
+            application/json:
+              example:
+                status: 404
+                error: No existe un Carrito con ese ID.
+
+
+    put:
+      summary: Actualizar un carrito por ID
+      tags:
+      - Carts
+      description: Actualiza un carrito específico por su ID.
+      parameters:
+        - in: path
+          name: cartId
+          required: true
+          schema:
+            type: string
+          description: ID del carrito.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              products:
+                - id: '456'
+                  quantity: 3
+                - id: '789'
+                  quantity: 1
+      responses:
+        '200':
+          description: Éxito. Carrito actualizado correctamente.
+          content:
+            application/json:
+              example:
+                message: Carrito actualizado correctamente.
+                cart:
+                  _id: '123'
+                  products:
+                    - id: '456'
+                      quantity: 3
+                    - id: '789'
+                      quantity: 1
+        '404':
+          description: Carrito no encontrado.
+          content:
+            application/json:
+              example:
+                status: 404
+                error: Carrito no encontrado.
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              example:
+                status: 404
+                error: Error del servidor
+
+    delete:
+      summary: Eliminar un carrito por ID
+      tags:
+      - Carts
+      description: Elimina un carrito específico por su ID.
+      parameters:
+        - in: path
+          name: cartId
+          required: true
+          schema:
+            type: string
+          description: ID del carrito.
+      responses:
+        '200':
+          description: Éxito. Carrito eliminado correctamente.
+          content:
+            application/json:
+              example:
+                message: Carrito eliminado correctamente.
+        '404':
+          description: Carrito no encontrado.
+          content:
+            application/json:
+              example:
+                status: 404
+                error: Carrito no encontrado.
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              example:
+                status: 404
+                error: Error del servidor
