@@ -1,7 +1,7 @@
 const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo, getProductsMongo } = require('../dao/ProductManager.js');
 const productosModelo = require('../dao/models/productsModel.js');
 const productService = require("../services/productServices.js")
-const { customizeError, errorDcitionary } = require ("../errorHandler.js")
+const { customizeError, errorDictionary } = require ("../errorHandler.js")
 
 function handleError(res, errorCode) {
     logger.error('Error:', errorCode);
