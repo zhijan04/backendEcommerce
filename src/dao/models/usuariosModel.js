@@ -16,7 +16,14 @@ const usuariosEsquema = new mongoose.Schema(
         },
         Token: String,
         expira: Date,
-        cartId: String
+        cartId: String,
+        documents: [
+            {
+                name: String,
+                reference: String
+            }
+        ],
+        last_connection: String,
     },
         {
         timestamps: {
@@ -25,6 +32,11 @@ const usuariosEsquema = new mongoose.Schema(
         }
     },{strict:false}
 );
+
+usuariosEsquema.pre('save', function(next) {
+    this.last_connection = new Date();
+    next();
+});
 
 const Usuario = mongoose.model("usuarios", usuariosEsquema);
 
