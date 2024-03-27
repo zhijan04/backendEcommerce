@@ -10,12 +10,12 @@ const auth = (req, res, next) => {
     next();
 };
 
-router.put('/premium/:uid', UsuariosController.changeUserRole);
+router.put('/premium/:uid',auth, UsuariosController.changeUserRole);
 
-router.post('/:uid/documents', UsuariosController.uploadDocuments); // usar key "documento"
+router.post('/:uid/documents',auth, UsuariosController.uploadDocuments); // usar key "documento"
 
-router.post('/:uid/productImage', UsuariosController.uploadProductImage); // usar key "productImage"
+router.post('/:uid/productImage',auth, UsuariosController.uploadProductImage); // usar key "productImage"
 
-router.post('/:uid/profile', UsuariosController.uploadProfile); // usar key "profileImage"
+router.post('/:uid/profile',auth, UsuariosController.uploadProfile); // usar key "profileImage"
 
 module.exports = router;
