@@ -4,4 +4,3 @@
     return usuario
 }
 module.exports = currentDTO
-//unicamente puse el rol y email en mayusculas como digo el profe para mostrar que se entiende el concepto.

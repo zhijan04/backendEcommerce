@@ -1,4 +1,3 @@
-const productsRouter = require('../rutas/ProductRouter.js');
 const { getProductsMongo } = require('../dao/ProductManager.js');
 const { getAllCartsMongo } = require('../dao/CartManager.js')
 const cartsModelo = require('../dao/models/cartsModel.js');

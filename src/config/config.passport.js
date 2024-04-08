@@ -1,6 +1,5 @@
 const passport = require('passport');
 const github = require('passport-github2');
-const config = require('../config/config.js');
 const usuariosModelo = require('../dao/models/usuariosModel.js')
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');

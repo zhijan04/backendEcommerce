@@ -17,7 +17,6 @@ function handleError(res, errorCode, additionalMessage) {
 const TicketsModel = require("../dao/models/ticketsModel.js")
 const ProductosModelo = require("../dao/models/productsModel.js")
 const CartsModelo = require("../dao/models/cartsModel.js");
-const { logger } = require('express-winston');
 
 class cartController {
     constructor() { }

@@ -1,16 +1,10 @@
-const { addProductMongo, getProductById, updateProductMongo, deleteProductMongo, getProductsMongo } = require('../dao/ProductManager.js');
-const productosModelo = require('../dao/models/productsModel.js');
 const productService = require("../services/productServices.js")
-const { customizeError, errorDictionary } = require ("../errorHandler.js")
+const { customizeError } = require ("../errorHandler.js")
 
 function handleError(res, errorCode) {
     logger.error('Error:', errorCode);
     const customizedError = customizeError(errorCode);
     res.status(500).json({ error: customizedError.message });
-}
-
-function validateFields(data, fields) {
-    return fields.filter(field => !(field in data));
 }
 
 class productController {
