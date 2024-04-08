@@ -1,5 +1,8 @@
 const { createCartMongo, getAllCartsMongo, addProductToCartMongo, removeProductFromCartMongo, updateCartMongo, updateProductQuantityMongo, removeAllProductsFromCartMongo, getCartMongo, getProductById } = require('../dao/CartManager.js')
 const { customizeError } = require ('../errorHandler.js')
+const nodemailer = require('nodemailer');
+const config = require ("../config/config.js")
+
 
 function handleError(res, errorCode, additionalMessage) {
     console.error('Error:', errorCode);
@@ -160,6 +163,40 @@ class cartController {
         }
 
     }
+    static async sendEmail(email, ticketDetails, productsPurchased) {
+        try {
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.office365.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: config.EMAIL,
+                    pass: config.PASSWORD_EMAIL
+                }
+            });
+    
+            const mailOptions = {
+                from: config.EMAIL, 
+                to: email,
+                subject: 'Detalle de tu compra',
+                html: `
+                    <h1>Detalle de tu compra</h1>
+                    <p>Ticket: ${ticketDetails.code}</p>
+                    <p>Fecha de compra: ${ticketDetails.purchase_Datetime}</p>
+                    <h2>Productos comprados:</h2>
+                    <ul>
+                        ${productsPurchased.map(product => `<li>${product.quantity} x ${product.id} - $${product.price}</li>`).join('')}
+                    </ul>
+                    <p>Monto total: $${ticketDetails.amount}</p>
+                `
+            };
+
+            await transporter.sendMail(mailOptions);
+        } catch (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+            throw error;
+        }
+    }
     static async purchaseTicket(req, res) {
         async function generateTicket(user, products) {
             try {
@@ -225,6 +262,8 @@ class cartController {
             );
             
             await updateCartMongo(cartId, remainingProducts);
+
+            await cartController.sendEmail(user.email, ticketDetails, productsPurchased);
     
             res.render('ticket', { ticket: ticketDetails, productsPurchased });
         } catch (error) {

@@ -9,7 +9,8 @@ const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const handlebars = require('handlebars');
-const Usuario = require ('../dao/models/usuariosModel.js')
+const Usuario = require ('../dao/models/usuariosModel.js');
+const config = require('../config/config.js');
 
 
 function handleError(res, error) {
@@ -154,19 +155,18 @@ class viewController {
     
         const ResetUrl = `http://${req.headers.host}/restablecerPassword/${usuario.Token}`;
     
-        // Configuración del transporte de nodemailer (ajusta según tu proveedor de correo)
         const transporter = nodemailer.createTransport({
             host: 'smtp.office365.com',
             port: 587,
             secure: false,
             auth: {
-                user: 'testeoCoderHouseLeonardoBenitez@outlook.com.ar',
-                pass: 'minero123'
+                user: config.EMAIL,
+                pass: config.PASSWORD_EMAIL
             }
         });
     
         const mailOptions = {
-            from: 'testeoCoderHouseLeonardoBenitez@outlook.com.ar',
+            from: config.EMAIL,
             to: email,
             subject: 'Restablecer Contraseña',
             html: `<p>¡Hola! Hemos visto que quieres restablecer tu contraseña... </p><p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p><a href="${ResetUrl}">${ResetUrl}</a>`

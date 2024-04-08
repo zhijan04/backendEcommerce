@@ -16,8 +16,9 @@
     <h2>Productos Comprados</h2>
     <ul>
         {{#each productsPurchased}}
-            <li>{{this.quantity}} x {{this.id}} - Precio: {{this.price}}</li>
+            <li>{{this.quantity}} x {{this.id}} - Precio p/u: ${{this.price}}</li>
         {{/each}}
+        precio total: ${{this.ticket.amount}}
     </ul>
 </body>
 
